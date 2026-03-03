@@ -30,7 +30,7 @@ Thank you for your interest in contributing! Following these guidelines ensures 
 
 # Collaborator Workflow
 
-> [!CATUION]
+> [!CAUTION]
 >  irect pushes to `main` are prohibited. All work must be done in feature branches.
 
 ## 1. Branch Naming
