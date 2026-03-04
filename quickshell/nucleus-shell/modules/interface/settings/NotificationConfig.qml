@@ -12,7 +12,17 @@ ContentMenu {
     title: "Notifications & Overlays"
     description: "Adjust notification and overlay settings."
 
+    function indexFromPosition(pos, model) {
+        pos = pos.toLowerCase()
+        for (let i = 0; i < model.length; i++) {
+            if (model[i].toLowerCase().replace(" ", "-") === pos)
+                return i
+        }
+        return 0
+    }
+
     ContentCard {
+
         StyledText {
             text: "Notifications"
             font.pixelSize: Metrics.fontSize(20)
@@ -32,217 +42,174 @@ ContentMenu {
         }
 
         RowLayout {
-            id: notificationPosSelector
-
-            property string title: "Notification's Position"
-            property string description: "Select where notification will be shown."
-            property string prefField: ''
 
             ColumnLayout {
                 StyledText {
-                    text: notificationPosSelector.title
+                    text: "Notification Position"
                     font.pixelSize: Metrics.fontSize(16)
                 }
 
                 StyledText {
-                    text: notificationPosSelector.description
+                    text: "Select where notification will be shown."
                     font.pixelSize: Metrics.fontSize(12)
                 }
-
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
+            Item { Layout.fillWidth: true }
 
             StyledDropDown {
+                id: notificationDropdown
                 label: "Position"
-                model: ["Top Left", "Top Right", "Top"]
-                // Set initial index based on Config value
-                currentIndex: {
-                    switch (Config.runtime.notifications.position.toLowerCase()) {
-                    case "top-left":
-                        return 0;
-                    case "top-right":
-                        return 1;
-                    case "top":
-                        return 2;
-                    default:
-                        return 0;
-                    }
-                }
-                onSelectedIndexChanged: (index) => {
-                    Config.updateKey("notifications.position", model[index].toLowerCase().replace(" ", "-"));
+
+                property var positions: ["Top Left", "Top Right", "Top"]
+
+                model: positions
+
+                currentIndex:
+                    indexFromPosition(
+                        Config.runtime.notifications.position,
+                        positions
+                    )
+
+                onSelectedIndexChanged: function(index) {
+                    Config.updateKey(
+                        "notifications.position",
+                        positions[index].toLowerCase().replace(" ", "-")
+                    )
                 }
             }
-
         }
 
         RowLayout {
-            id: testNotif
-
-            property string title: "Test Notifications"
-            property string description: "Run a test notification."
-            property string prefField: ''
 
             ColumnLayout {
                 StyledText {
-                    text: testNotif.title
+                    text: "Test Notifications"
                     font.pixelSize: Metrics.fontSize(16)
                 }
 
                 StyledText {
-                    text: testNotif.description
+                    text: "Run a test notification."
                     font.pixelSize: Metrics.fontSize(12)
                 }
-
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
+            Item { Layout.fillWidth: true }
 
             StyledButton {
-                text: "Test Notifications"
+                text: "Test"
                 icon: "chat"
-                onClicked: Quickshell.execDetached(["notify-send", "This is a test notification"])
+
+                onClicked:
+                    Quickshell.execDetached([
+                        "notify-send",
+                        "Quickshell",
+                        "This is a test notification"
+                    ])
             }
-
         }
-
     }
 
     ContentCard {
+
         StyledText {
-            text: "Overlays/OSDs"
+            text: "Overlays / OSDs"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
         }
 
         StyledSwitchOption {
             title: "Enabled"
-            description: "Enable or disable built-in osd(s) daemon."
+            description: "Enable or disable built-in osd daemon."
             prefField: "overlays.enabled"
         }
 
         StyledSwitchOption {
-            title: "Volume Osd enabled"
+            title: "Volume OSD enabled"
             description: "Enable or disable volume osd."
             prefField: "overlays.volumeOverlayEnabled"
         }
 
         StyledSwitchOption {
-            title: "Brightness Osd enabled"
+            title: "Brightness OSD enabled"
             description: "Enable or disable brightness osd."
             prefField: "overlays.brightnessOverlayEnabled"
         }
 
         RowLayout {
-            id: brightnessPosSelector
-
-            property string title: "Brightness Osd Position"
-            property string description: "Choose the position where the brightness osd is shown."
-            property string prefField: ''
 
             ColumnLayout {
                 StyledText {
-                    text: brightnessPosSelector.title
+                    text: "Brightness OSD Position"
                     font.pixelSize: Metrics.fontSize(16)
                 }
 
                 StyledText {
-                    text: brightnessPosSelector.description
+                    text: "Choose where brightness OSD is shown."
                     font.pixelSize: Metrics.fontSize(12)
                 }
-
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
+            Item { Layout.fillWidth: true }
 
             StyledDropDown {
-                label: "Brightness Overlay Position"
-                model: ["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Top", "Bottom"]
-                // Set initial index based on Config value
-                currentIndex: {
-                    switch (Config.runtime.overlays.brightnessOverlayPosition.toLowerCase()) {
-                    case "top-left":
-                        return 0;
-                    case "top-right":
-                        return 1;
-                    case "bottom-left":
-                        return 2;
-                    case "bottom-right":
-                        return 3;
-                    case "top":
-                        return 4;
-                    case "bottom":
-                        return 5;
-                    default:
-                        return 0;
-                    }
-                }
-                onSelectedIndexChanged: (index) => {
-                    Config.updateKey("overlays.brightnessOverlayPosition", model[index].toLowerCase().replace(" ", "-"));
+
+                property var positions:
+                    ["Top Left","Top Right","Bottom Left","Bottom Right","Top","Bottom"]
+
+                model: positions
+
+                currentIndex:
+                    indexFromPosition(
+                        Config.runtime.overlays.brightnessOverlayPosition,
+                        positions
+                    )
+
+                onSelectedIndexChanged: function(index) {
+                    Config.updateKey(
+                        "overlays.brightnessOverlayPosition",
+                        positions[index].toLowerCase().replace(" ", "-")
+                    )
                 }
             }
-
         }
 
         RowLayout {
-            id: volumePosSelector
-
-            property string title: "Volume Osd Position"
-            property string description: "Choose the position where the volume osd is shown."
-            property string prefField: ''
 
             ColumnLayout {
                 StyledText {
-                    text: volumePosSelector.title
+                    text: "Volume OSD Position"
                     font.pixelSize: Metrics.fontSize(16)
                 }
 
                 StyledText {
-                    text: volumePosSelector.description
+                    text: "Choose where volume OSD is shown."
                     font.pixelSize: Metrics.fontSize(12)
                 }
-
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
+            Item { Layout.fillWidth: true }
 
             StyledDropDown {
-                label: "Volume Overlay Position"
-                model: ["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Top", "Bottom"]
-                // Set initial index based on Config value
-                currentIndex: {
-                    switch (Config.runtime.overlays.volumeOverlayPosition.toLowerCase()) {
-                    case "top-left":
-                        return 0;
-                    case "top-right":
-                        return 1;
-                    case "bottom-left":
-                        return 2;
-                    case "bottom-right":
-                        return 3;
-                    case "top":
-                        return 4;
-                    case "bottom":
-                        return 5;
-                    default:
-                        return 0;
-                    }
-                }
-                onSelectedIndexChanged: (index) => {
-                    Config.updateKey("overlays.volumeOverlayPosition", model[index].toLowerCase().replace(" ", "-"));
+
+                property var positions:
+                    ["Top Left","Top Right","Bottom Left","Bottom Right","Top","Bottom"]
+
+                model: positions
+
+                currentIndex:
+                    indexFromPosition(
+                        Config.runtime.overlays.volumeOverlayPosition,
+                        positions
+                    )
+
+                onSelectedIndexChanged: function(index) {
+                    Config.updateKey(
+                        "overlays.volumeOverlayPosition",
+                        positions[index].toLowerCase().replace(" ", "-")
+                    )
                 }
             }
-
         }
-
     }
-
 }
