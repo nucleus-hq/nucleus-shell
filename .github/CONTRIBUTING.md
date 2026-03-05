@@ -27,8 +27,48 @@ Thank you for your interest in contributing! Following these guidelines ensures 
 * Prefer module loaders for modules with enable/disable config values to prevent crashes and reduce RAM usage.
 
 ---
+## Commit Message Guidelines
 
-# Collaborator Workflow
+We follow the **Conventional Commits** specification.
+
+Format:
+
+```
+type(scope): short description
+```
+
+Example:
+
+```
+feat(launcher): add fuzzy search
+fix(settings): resolve crash when opening panel
+refactor(renderer): simplify pipeline logic
+```
+
+### Allowed Types
+
+| Type     | Description                           |
+| -------- | ------------------------------------- |
+| feat     | New feature                           |
+| fix      | Bug fix                               |
+| refactor | Code change without altering behavior |
+| docs     | Documentation changes                 |
+| style    | Formatting / linting changes          |
+| perf     | Performance improvements              |
+| test     | Adding or updating tests              |
+| build    | Build system or dependency changes    |
+| ci       | CI configuration changes              |
+| chore    | Maintenance tasks                     |
+
+### Rules
+
+* Use **present tense** ("add feature", not "added feature").
+* Keep the **summary under ~72 characters**.
+* Add a **scope** when applicable (e.g., `launcher`, `settings`, `renderer`).
+
+---
+
+# Collaboration Workflow
 
 > [!CAUTION]
 > Direct pushes to `main` are prohibited. All work must be done in feature branches.
