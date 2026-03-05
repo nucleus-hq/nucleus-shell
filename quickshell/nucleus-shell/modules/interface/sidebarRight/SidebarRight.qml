@@ -21,16 +21,12 @@ PanelWindow {
     exclusiveZone: 0
     WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarRight
     
-    property var monitor: Hyprland.focusedMonitor
-
-
     property real sidebarRightWidth: 500
 
-    implicitWidth: sidebarRightWidth
+    implicitWidth: Compositor.screenW
 
     HyprlandFocusGrab {
         id: grab
-
         active: Compositor.require("hyprland")
         windows: [sidebarRight]
     }
@@ -56,29 +52,44 @@ PanelWindow {
     property var sink: Pipewire.defaultAudioSink?.audio
 
 
+    MouseArea {
+        anchors.fill: parent
+        z: 0
+        onPressed: Globals.visiblility.sidebarRight = false
+    }
+
     StyledRect {
         id: container
+        z: 1
         color: Appearance.m3colors.m3background
         radius: Metrics.radius("large")
-        implicitWidth: sidebarRight.sidebarRightWidth
+        width: sidebarRight.sidebarRightWidth
 
-        anchors.fill: parent
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            right: parent.right
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onPressed: mouse.accepted = true
+        }
 
         FocusScope {
             focus: true 
             anchors.fill: parent
+
             Keys.onPressed: {
                 if (event.key === Qt.Key_Escape) {
-                    Globals.visiblility.sidebarRight = false;
+                    Globals.visiblility.sidebarRight = false
                 }
             }
-            SidebarRightContent {
-            }
-        }
 
+            SidebarRightContent { }
+        }
     }
 
-    // --- Toggle logic ---
     function togglesidebarRight() {
         Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight
     }
@@ -87,13 +98,6 @@ PanelWindow {
         target: "sidebarRight"
         function toggle() {
             togglesidebarRight()
-        }
-    }
-
-    Connections {
-        target: Hyprland
-        function onFocusedMonitorChanged() {
-            sidebarRight.monitor = Hyprland.focusedMonitor
         }
     }
 }
