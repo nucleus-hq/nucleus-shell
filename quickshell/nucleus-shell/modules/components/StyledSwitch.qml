@@ -1,5 +1,4 @@
 import qs.config
-import qs.modules.components
 import QtQuick
 import QtQuick.Controls
 
