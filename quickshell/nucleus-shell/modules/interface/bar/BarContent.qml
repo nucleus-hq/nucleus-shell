@@ -10,44 +10,18 @@ Item {
 
     Row {
         id: hCenterRow
-
         visible: isHorizontal
         anchors.centerIn: parent
         spacing: Metrics.spacing(4)
 
-        SystemUsageModule {
-        }
-
-        MediaPlayerModule {
-        }
-
-        ActiveWindowModule {
-        }
-
-        ClockModule {
-        }
-
-        BatteryIndicatorModule {
-        }
-
+        SystemUsageModule {}
+        MediaPlayerModule {}
+        ActiveWindowModule {}
+        ClockModule {}
+        BatteryIndicatorModule {}
     }
 
     RowLayout {
-        /* StyledText {
-            id: hGlyph
-            Layout.alignment: Qt.AlignLeft
-            Layout.rightMargin: Metrics.margin("small") - 4
-            font.pixelSize: Metrics.fontSize("huge") * 1.7
-            color: Globals.visiblility.sidebarLeft ? Appearance.m3colors.m3error : Appearance.syntaxHighlightingTheme
-            text: "✦"
-
-            MouseArea {
-                id: ma
-                anchors.fill: parent
-                onClicked: Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft
-            }
-        } */
-
         id: hLeftRow
 
         visible: isHorizontal
@@ -61,12 +35,13 @@ Item {
             iconSize: Metrics.iconSize(22)
             iconColor: Appearance.m3colors.m3error
             toggle: Globals.visiblility.sidebarLeft
-            onToggled: Globals.visiblility.sidebarLeft = value
+
+            onToggled: function(value) {
+                Globals.visiblility.sidebarLeft = value
+            }
         }
 
-        WorkspaceModule {
-        }
-
+        WorkspaceModule {}
     }
 
     RowLayout {
@@ -84,19 +59,16 @@ Item {
 
         StyledText {
             id: seperator
-
             visible: (sysTray.items.count > 0) && Config.runtime.bar.modules.statusIcons.enabled
             Layout.alignment: Qt.AlignLeft
             font.pixelSize: Metrics.fontSize("hugeass")
             text: "·"
         }
 
-        StatusIconsModule {
-        }
+        StatusIconsModule {}
 
         StyledText {
             id: seperator2
-
             Layout.alignment: Qt.AlignLeft
             font.pixelSize: Metrics.fontSize("hugeass")
             text: "·"
@@ -107,9 +79,11 @@ Item {
             iconSize: Metrics.iconSize(22)
             iconColor: Appearance.m3colors.m3error
             toggle: Globals.visiblility.powermenu
-            onToggled: Globals.visiblility.powermenu = value
-        }
 
+            onToggled: function(value) {
+                Globals.visiblility.powermenu = value
+            }
+        }
     }
 
     // Vertical Layout
@@ -123,7 +97,6 @@ Item {
 
         Row {
             id: vRow
-
             anchors.centerIn: parent
             spacing: Metrics.spacing(8)
             rotation: 90
@@ -134,21 +107,19 @@ Item {
                 iconColor: Appearance.m3colors.m3error
                 toggle: Globals.visiblility.sidebarLeft
                 rotation: 270
-                onToggled: Globals.visiblility.sidebarLeft = value
+
+                onToggled: function(value) {
+                    Globals.visiblility.sidebarLeft = value
+                }
             }
 
-            SystemUsageModule {
-            }
-
-            MediaPlayerModule {
-            }
+            SystemUsageModule {}
+            MediaPlayerModule {}
 
             SystemTray {
                 rotation: 0
             }
-
         }
-
     }
 
     Item {
@@ -160,15 +131,12 @@ Item {
 
         Row {
             id: centerRow
-
             anchors.centerIn: parent
 
             WorkspaceModule {
                 rotation: 90
             }
-
         }
-
     }
 
     Item {
@@ -181,7 +149,6 @@ Item {
 
         Row {
             id: row
-
             anchors.centerIn: parent
             spacing: Metrics.spacing(6)
             rotation: 90
@@ -190,11 +157,8 @@ Item {
                 rotation: 270
             }
 
-            StatusIconsModule {
-            }
-
-            BatteryIndicatorModule {
-            }
+            StatusIconsModule {}
+            BatteryIndicatorModule {}
 
             ToggleModule {
                 icon: "power_settings_new"
@@ -202,11 +166,11 @@ Item {
                 iconColor: Appearance.m3colors.m3error
                 toggle: Globals.visiblility.powermenu
                 rotation: 270
-                onToggled: Globals.visiblility.powermenu = value
+
+                onToggled: function(value) {
+                    Globals.visiblility.powermenu = value
+                }
             }
-
         }
-
     }
-
 }
