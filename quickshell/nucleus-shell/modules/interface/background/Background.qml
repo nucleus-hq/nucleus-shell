@@ -19,9 +19,17 @@ Scope {
             id: backgroundContainer
 
             required property var modelData
+            property string displayName: modelData.name
 
-            function applyWallpaper(wallpaper) {
-                Config.updateKey("appearance.background.path", wallpaper)
+            property url wallpaperPath: {
+                const displays = Config.runtime.monitors
+                const fallback = Config.runtime.appearance.background.defaultPath
+
+                if (!displays)
+                    return fallback
+
+                const monitor = displays?.[displayName]
+                return monitor?.wallpaper ?? fallback
             }
 
             // parallax config
@@ -113,10 +121,21 @@ Scope {
 
                 stdout: StdioCollector {
                     onStreamFinished: {
-                        const out = text.trim()
-                        if (out !== "null" && out.length > 0) {
-                            applyWallpaper(out)
+                    const out = text.trim()
+
+                    if (out !== "null" && out.length > 0) {
+                        const parts = out.split("|")
+
+                        if (parts.length === 2) {
+                            const monitor = parts[0]
+                            const wallpaper = parts[1]
+
+                            Config.updateKey(
+                                "monitors." + monitor + ".wallpaper",
+                                wallpaper
+                            )
                         }
+                    }
 
                         Quickshell.execDetached([
                             "nucleus", "ipc", "call", "clock", "changePosition"
@@ -142,7 +161,7 @@ Scope {
                     smooth: false
                     cache: false
                     fillMode: Image.PreserveAspectCrop
-                    source: Config.runtime.appearance.background.path
+                    source: wallpaperPath
 
                     width: wallpaperWidth / wallpaperToScreenRatio * effectiveScale
                     height: wallpaperHeight / wallpaperToScreenRatio * effectiveScale
@@ -227,11 +246,6 @@ Scope {
                 }
             }
 
-            Clock {
-                id: clock
-                imageFailed: bgImg.status === Image.Error
-            }
-
             IpcHandler {
                 target: "background"
 
@@ -245,4 +259,10 @@ Scope {
             }
         }
     }
+
+    Clock {
+        id: clock
+        imageFailed: bgImg.status === Image.Error
+    }
+
 }

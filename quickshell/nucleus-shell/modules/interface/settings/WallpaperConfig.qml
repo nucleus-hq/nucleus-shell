@@ -8,6 +8,7 @@ import qs.modules.components
 import qs.services
 
 ContentMenu {
+    property string displayName: root.screen?.name ?? ""
     property var intervalOptions: [{
         "value": 5,
         "label": "5 minutes"
@@ -79,7 +80,16 @@ ContentMenu {
                 Image {
                     opacity: Config.runtime.appearance.background.enabled ? 1 : 0
                     anchors.fill: parent
-                    source: Config.runtime.appearance.background.path
+                    source: {
+                        const displays = Config.runtime.monitors
+                        const fallback = Config.runtime.appearance.background.defaultPath
+
+                        if (!displays)
+                            return fallback
+
+                        const monitor = displays?.[displayName]
+                        return monitor?.wallpaper ?? fallback
+                    }                    
                     fillMode: Image.PreserveAspectCrop
                     cache: true
 

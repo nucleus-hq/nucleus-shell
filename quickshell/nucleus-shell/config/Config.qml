@@ -161,6 +161,7 @@ Singleton {
             id: configOptionsJsonAdapter
             
             property var plugins: ({}) // dynamic plugins config variable
+            property var monitors: ({})
 
             property JsonObject appearance: JsonObject {
                 property string theme: "dark"
@@ -188,7 +189,7 @@ Singleton {
                 }
                 property JsonObject background: JsonObject {
                     property bool enabled: true 
-                    property url path: Directories.defaultsPath + "/default.jpg"
+                    property url defaultPath: Directories.defaultsPath + "/default.jpg"
                     property JsonObject parallax: JsonObject {
                         property bool enabled: true 
                         property bool enableSidebarLeft: true
