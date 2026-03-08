@@ -2,14 +2,14 @@
 
 - [x] Redesign config layout and widget system for improved modularity and discoverability. (Worked on till: `v0.7.3`)
 - [x] Improve installer prompts and backup behavior
-- [ ] Add support for customizable bar per monitor
+- [x] Add support for customizable bar per monitor
 - [x] Improve performance
 - [x] Add a screenshot utility to the shell.
 - [ ] Improve Intelligence chat interface.
 - [ ] Add greetd.
 - [x] Add polkit agent.
 - [ ] Improve bar layout and design.
-- [ ] Improve support for multiple displays... (There is decent support for that but needs optimization)
+- [x] Improve support for multiple displays... (There is decent support for that but needs optimization)
 - [ ] Implement material ui.
 - [ ] Add `First Time` setup
 - [x] Customizable components (Decent Support)
