@@ -41,7 +41,8 @@ info() {
 echo "Select the version to install:"
 echo "1. Latest"
 echo "2. Edge"
-echo "3. Git"
+echo "3. Tag"
+echo "4. Git"
 
 read -rp "[?] Choice: " choice
 
@@ -49,10 +50,14 @@ case "$choice" in
     1) mode="stable" ;;
     2) mode="indev" ;;
     3)
-        read -rp "[?] Enter git tag or version: " input
-        [[ -z "$input" ]] && fail "No version provided"
-        latest="${input#v}"
-        latest_tag="v$latest"
+        mode="tag"
+        read -rp "[?] Enter tag (ex: v0.7.6): " latest_tag
+        [[ -z "$latest_tag" ]] && fail "No tag provided"
+        latest="${latest_tag#v}"
+        ;;
+    4)
+        mode="git"
+        latest="RC"
         ;;
     *) fail "Invalid choice" ;;
 esac
@@ -63,8 +68,41 @@ esac
 current="$(jq -r '.shell.version // empty' "$CONFIG")"
 [[ -n "$current" ]] || fail "Current version not set"
 
-# Resolve release
-if [[ "${mode:-}" ]]; then
+tmp="$(mktemp -d)"
+
+
+if [[ "$mode" == "git" ]]; then
+    repo_dir="$tmp/repo"
+    SRC_DIR="$repo_dir/quickshell/nucleus-shell"
+
+    run "Cloning repository" \
+        git clone --depth=1 "https://github.com/$REPO.git" "$repo_dir"
+
+    [[ -d "$SRC_DIR" ]] || fail "nucleus-shell directory missing in repo"
+
+    run "Installing files" bash -c "
+        rm -rf '$QS_DIR' &&
+        mkdir -p '$QS_DIR' &&
+        cp -r '$SRC_DIR/'* '$QS_DIR/'
+    "
+		
+	# Update config
+	run "Updating configuration" bash -c "
+		tmp_cfg=\$(mktemp) &&
+		jq --arg v '$latest' '.shell.version = \$v' '$CONFIG' > \"\$tmp_cfg\" &&
+		mv \"\$tmp_cfg\" '$CONFIG'
+	"
+
+    run "Reloading shell" bash -c "
+        killall quickshell &>/dev/null || true
+        nohup quickshell -c nucleus-shell &>/dev/null & disown
+    "
+
+    printf "[✓] Updated to nucleus-shell git-rc \n"
+    exit 0
+fi
+
+if [[ "$mode" == "stable" || "$mode" == "indev" ]]; then
     info "Resolving release"
     latest_tag="$(
         curl -fsSL "$API" |
@@ -76,6 +114,7 @@ if [[ "${mode:-}" ]]; then
             .tag_name
         "
     )"
+
     [[ -n "$latest_tag" && "$latest_tag" != "null" ]] || fail "Release resolution failed"
     latest="${latest_tag#v}"
 fi
@@ -86,8 +125,6 @@ if [[ "$current" == "$latest" ]]; then
     exit 0
 fi
 
-# Temp workspace
-tmp="$(mktemp -d)"
 zip="$tmp/source.zip"
 root_dir="$tmp/nucleus-shell-$latest"
 SRC_DIR="$root_dir/quickshell/nucleus-shell"
@@ -119,8 +156,8 @@ run "Updating configuration" bash -c "
 
 # Reload shell
 run "Reloading shell" bash -c "
-    killall qs &>/dev/null || true
-    nohup qs -c nucleus-shell &>/dev/null & disown
+    killall quickshell &>/dev/null || true
+    nohup quickshell -c nucleus-shell &>/dev/null & disown
 "
 
 printf "[✓] Updated nucleus-shell: %s -> %s\n" "$current" "$latest"
