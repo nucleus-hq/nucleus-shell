@@ -3,29 +3,33 @@ import qs.modules.components
 import qs.modules.functions
 import qs.services
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
-import QtQuick.Layouts
 
 Item {
     id: container
+
     property string displayName: screen?.name ?? ""
+
     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 
     property Toplevel activeToplevel: Compositor.isWorkspaceOccupied(Compositor.focusedWorkspaceId)
         ? Compositor.activeToplevel
         : null
 
-    implicitWidth: row.implicitWidth + 30
-    implicitHeight: ConfigResolver.bar(displayName).modules.height
+    readonly property string appId: activeToplevel?.appId ?? ""
+    readonly property string windowTitle: activeToplevel?.title ?? ""
 
-    function simplifyTitle(title) {
+    implicitHeight: ConfigResolver.bar(displayName).modules.height
+    implicitWidth: row.implicitWidth + 24
+
+    function cleanTitle(title) {
         if (!title)
             return ""
 
-        title = title.replace(/[●⬤○◉◌◎]/g, "") // Symbols to remove
+        title = title.replace(/[●⬤○◉◌◎]/g, "")
 
-        // Normalize separators
         title = title
             .replace(/\s*[|—]\s*/g, " - ")
             .replace(/\s+/g, " ")
@@ -36,101 +40,123 @@ Item {
         if (parts.length === 1)
             return parts[0]
 
-        // Known app names (extend freely my fellow contributors)
-        const apps = [
-            "Firefox", "Mozilla Firefox",
-            "Chromium", "Google Chrome",
-            "Neovim", "VS Code", "Code",
-            "Kitty", "Alacritty", "Terminal",
-            "Discord", "Spotify", "Steam",
-            "Settings - Nucleus", "Settings"
-        ]
+        const app = parts[parts.length - 1]
+        const context = parts[0]
 
-        let app = ""
-        for (let i = parts.length - 1; i >= 0; i--) { // loop over
-            for (let a of apps) {
-                if (parts[i].includes(a)) {
-                    app = a
-                    break
-                }
+        if (context && context !== app)
+            return `${app} · ${context}`
+
+        return app
+    }
+
+    function trimTitle(text, max) {
+        if (!text)
+            return ""
+
+        if (text.length <= max)
+            return text
+
+        const separators = [" · ", " - ", " | "]
+
+        for (let s of separators) {
+            if (text.includes(s)) {
+                const parts = text.split(s)
+                const left = parts[0]
+                const right = parts.slice(1).join(s)
+
+                if (left.length + right.length + 5 <= max)
+                    return `${left}${s}${right}`
+
+                const rmax = Math.floor(max * 0.55)
+                if (right.length > rmax)
+                    return `${left}${s}${right.slice(0, rmax)}…`
+
+                return `${left}${s}${right}`
             }
-            if (app) break
         }
 
-        if (!app)
-            app = parts[parts.length - 1]
+        const half = Math.floor(max / 2)
 
-        const context = parts.find(p => p !== app)
-
-        return context ? `${app} · ${context}` : app
+        return text.substring(0, half)
+             + "…"
+             + text.substring(text.length - half)
     }
 
+    function resolveIcon(appId) {
+        if (!appId)
+            return "application-x-executable"
 
-    function formatAppId(appId) { // Random ass function to make it look good
-        if (!appId || appId.length === 0)
-            return "";
+        const id = appId.toLowerCase()
 
-        // split on dashes/underscores
-        const parts = appId.split(/[-_]/);
-        // capitalize each segment
-        for (let i = 0; i < parts.length; i++) {
-            const p = parts[i];
-            parts[i] = p.charAt(0).toUpperCase() + p.slice(1);
+        const map = {
+            "org.mozilla.firefox": "firefox",
+            "firefox": "firefox",
+            "chromium": "chromium",
+            "google-chrome": "google-chrome",
+            "code": "vscode",
+            "code-oss": "vscode",
+            "kitty": "kitty",
+            "alacritty": "alacritty",
+            "discord": "discord",
+            "spotify": "spotify",
+            "steam": "steam"
         }
-        return parts.join("-");
+
+        return map[id] || id
     }
 
-    /* Column {
-        id: col
+    Rectangle {
+        anchors.fill: parent
+
+        visible: ConfigResolver.bar(displayName).position === "top"
+              || ConfigResolver.bar(displayName).position === "bottom"
+
+        radius: ConfigResolver.bar(displayName).modules.radius
+
+        color: Appearance.m3colors.m3surfaceContainerLow
+    }
+
+    RowLayout {
+        id: row
         anchors.centerIn: parent
+        spacing: 8
 
-        StyledText {
-            id: workspaceText
-            font.pixelSize: Metrics.fontSize("smallie")
-            text: {
-                if (!activeToplevel)
-                    return "Desktop"
+        Item {
+            id: iconContainer
 
-                const id = activeToplevel.appId || ""
+            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredWidth: Math.min(container.implicitHeight * 0.55, 20)
+            Layout.preferredHeight: Layout.preferredWidth
 
-                return id // Just for aesthetics
+            Image {
+                anchors.fill: parent
+
+                source: activeToplevel
+                    ? "image://icon/" + resolveIcon(appId)
+                    : "image://icon/user-desktop"
+
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
+                antialiasing: true
             }
-            horizontalAlignment: Text.AlignHCenter
         }
 
         StyledText {
             id: titleText
-            text: StringUtils.shortText(simplifyTitle(activeToplevel?.title, 24) || `Workspace ${Hyprland.focusedWorkspaceId}`)
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Metrics.fontSize("smalle")
-        }
-    } */
 
-    Rectangle {
-        visible: (ConfigResolver.bar(displayName).position === "top" || ConfigResolver.bar(displayName).position === "bottom")
-        color: Appearance.m3colors.m3paddingContainer
-        anchors.fill: parent
-        height: 34 
-        width: row.height + 30
-        radius: ConfigResolver.bar(displayName).modules.radius
-    }
+            Layout.alignment: Qt.AlignVCenter
 
+            text: {
+                if (!activeToplevel)
+                    return "Desktop"
 
-    RowLayout {
-        id: row
-        spacing: 12
-        anchors.centerIn: parent
+                const cleaned = cleanTitle(windowTitle)
+                return trimTitle(cleaned, 34)
+            }
 
-        MaterialSymbol {
-            icon: "desktop_windows"
-            rotation: (ConfigResolver.bar(displayName).position === "left" || ConfigResolver.bar(displayName).position === "right") ? 270 : 0
-        }
-
-        StyledText {
-            text: StringUtils.shortText(simplifyTitle(activeToplevel?.title), 24) || `Workspace ${Hyprland.focusedWorkspaceId}`
-            horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Appearance.font.size.small
-        }        
+            elide: Text.ElideRight
+        }
     }
-
 }
