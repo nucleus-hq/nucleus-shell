@@ -5,53 +5,97 @@ import qs.modules.components
 import qs.services
 
 Item {
-    id: batteryIndicatorModuleContainer
+    id: battery
 
     visible: UPower.batteryPresent
     Layout.alignment: Qt.AlignVCenter
 
-    // Determine if bar is isVertical
-    property bool isVertical: ConfigResolver.bar(screen?.name ?? "").position === "left" || ConfigResolver.bar(screen?.name ?? "").position === "right"
+    property string displayName: screen?.name ?? ""
 
-    implicitWidth: bgRect.implicitWidth
-    implicitHeight: bgRect.implicitHeight
+    property bool isVertical:
+        ConfigResolver.bar(displayName).position === "left"
+        || ConfigResolver.bar(displayName).position === "right"
+
+    property real level: UPower.percentage / 100
+
+    property bool charging: UPower.state === "charging"
+
+    property bool low: UPower.percentage <= 20
+
+    implicitWidth: container.implicitWidth
+    implicitHeight: container.implicitHeight
+
 
     Rectangle {
-        id: bgRect
-        color: isVertical ? Appearance.m3colors.m3primary : Appearance.m3colors.m3paddingContainer
-        radius: ConfigResolver.bar(screen?.name ?? "").modules.radius * Config.runtime.appearance.rounding.factor // No need to use metrics here...
+        id: container
 
-        implicitWidth: child.implicitWidth + Appearance.margin.large - (isVertical ? 10 : 0)
-        implicitHeight: ConfigResolver.bar(screen?.name ?? "").modules.height
-    }
+        radius: 999
+        anchors.fill: parent
 
-    RowLayout {
-        id: child
-        anchors.centerIn: parent
-        spacing: isVertical ? 0 : Metrics.spacing(8)
+        implicitHeight: ConfigResolver.bar(displayName).modules.height
+        implicitWidth: content.implicitWidth + 18
 
-        // Icon for isVertical bars
-        MaterialSymbol {
-            visible: isVertical
-            icon: UPower.battIcon
-            iconSize: Metrics.iconSize(20)
+        color: Appearance.m3colors.m3surfaceContainer
+
+
+        Rectangle {
+            id: fill
+
+            height: parent.height
+            radius: parent.radius
+
+            width: parent.width * level
+
+            Behavior on width {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            color: {
+                if (charging)
+                    return Appearance.m3colors.m3primary
+                if (low)
+                    return Appearance.m3colors.m3error
+                return Appearance.m3colors.m3secondary
+            }
+
+            opacity: 0.35
         }
 
-        // Battery percentage text
-        StyledText {
-            animate: false
-            font.pixelSize: Metrics.fontSize(16)
-            rotation: isVertical ? 270 : 0
-            text: (isVertical ? UPower.percentage : UPower.percentage + "%")
-        }
 
-        // Circular progress for horizontal bars
-        CircularProgressBar {
-            visible: !isVertical
-            value: UPower.percentage / 100
-            icon: UPower.battIcon
-            iconSize: Metrics.iconSize(18)
-            Layout.bottomMargin: Metrics.margin(2)
+        RowLayout {
+            id: content
+
+            anchors.centerIn: parent
+            spacing: 6
+
+
+            MaterialSymbol {
+                icon: charging ? "bolt" : UPower.battIcon
+
+                iconSize: Metrics.iconSize(18)
+
+                color: {
+                    if (charging)
+                        return Appearance.m3colors.m3primary
+                    if (low)
+                        return Appearance.m3colors.m3error
+                    return Appearance.m3colors.m3onSurface
+                }
+            }
+
+
+            StyledText {
+                text: UPower.percentage + "%"
+
+                animate: false
+
+                font.pixelSize: Appearance.font.size.small
+
+                color: Appearance.m3colors.m3onSurface
+            }
         }
     }
 }
