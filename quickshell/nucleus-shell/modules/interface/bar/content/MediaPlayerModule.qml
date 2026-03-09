@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Io
@@ -12,9 +13,13 @@ import qs.services
 Item {
     id: mediaPlayer
 
+    property var barConfig: screen && Config.bar?.[screen.name]
+        ? Config.bar[screen.name]
+        : Config.runtime.bar
+
     property bool isVertical: (
-        ConfigResolver.bar(screen?.name ?? "").position === "left" ||
-        ConfigResolver.bar(screen?.name ?? "").position === "right"
+        barConfig.position === "left" ||
+        barConfig.position === "right"
     )
 
     Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
@@ -26,15 +31,64 @@ Item {
     Rectangle {
         id: bgRect
 
-        color: Appearance.m3colors.m3paddingContainer
-        radius: ConfigResolver.bar(screen?.name ?? "").modules.radius *
+        radius: barConfig.modules.radius *
                 Config.runtime.appearance.rounding.factor
 
         implicitWidth: isVertical
             ? row.implicitWidth + Metrics.margin("large") - 10
             : row.implicitWidth + Metrics.margin("large")
 
-        implicitHeight: ConfigResolver.bar(screen?.name ?? "").modules.height
+        implicitHeight: barConfig.modules.height
+
+        color: "transparent"
+
+
+        Image {
+            id: blurSource
+
+            anchors.centerIn: parent
+            width: parent.width * 1.6
+            height: parent.height * 1.6
+
+            source: Mpris.artUrl
+            visible: false
+
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            mipmap: true
+        }
+
+
+        FastBlur {
+            id: blurred
+            anchors.fill: parent
+            source: blurSource
+            radius: 70
+            visible: false
+        }
+
+
+        OpacityMask {
+            anchors.fill: parent
+            visible: Mpris.artUrl !== ""
+
+            source: blurred
+
+            maskSource: Rectangle {
+                width: bgRect.width
+                height: bgRect.height
+                radius: bgRect.radius
+                color: "black"
+            }
+        }
+
+
+        Rectangle {
+            anchors.fill: parent
+            radius: bgRect.radius
+            color: Appearance.m3colors.m3paddingContainer
+            opacity: Mpris.artUrl !== "" ? 0.35 : 1
+        }
     }
 
 
@@ -50,10 +104,11 @@ Item {
 
             width: 24
             height: 24
-            radius: ConfigResolver.bar(screen?.name ?? "").modules.radius / 1.2
+
+            radius: barConfig.modules.radius / 1.2
 
             color: Appearance.colors.colLayer1Hover
-            opacity: 0.9
+            opacity: hoverArea.containsMouse ? 1 : 0.9
 
             clip: true
             layer.enabled: true
@@ -87,17 +142,39 @@ Item {
                         ? "#b1a4a4"
                         : "grey"
                 }
+
+
+                Rectangle {
+                    id: hoverOverlay
+
+                    anchors.fill: parent
+                    radius: parent.radius
+
+                    color: "#66000000"
+                    opacity: hoverArea.containsMouse ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 120 }
+                    }
+
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+
+                        icon: Mpris.isPlaying ? "pause" : "play_arrow"
+                        iconSize: 16
+                        color: "white"
+                    }
+                }
             }
 
 
             MouseArea {
+                id: hoverArea
                 anchors.fill: parent
                 hoverEnabled: true
 
                 onClicked: Mpris.playPause()
-
-                onEntered: iconButton.opacity = 1
-                onExited: iconButton.opacity = 0.9
             }
 
 
