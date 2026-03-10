@@ -11,23 +11,29 @@ import qs.modules.components
 import qs.services
 
 Scope {
-    property var settingsWindow: null
+
+    property Window settingsWindow: null
 
     IpcHandler {
-        function open(menu: string) {
-            Globals.states.settingsOpen = true;
+        target: "settings"
 
-            if (menu !== "" && settingsWindow !== null) {
-                for (var i = 0; i < settingsWindow.menuModel.length; i++) {
-                    var item = settingsWindow.menuModel[i];
-                    if (!item.header && item.label.toLowerCase() === menu.toLowerCase()) {
-                        settingsWindow.selectedIndex = item.page;
-                        break;
-                    }
+        function open(menu: string) {
+            Globals.states.settingsOpen = true
+
+            if (!settingsWindow || menu === "")
+                return
+
+            const target = menu.toLowerCase()
+
+            for (let i = 0; i < menuModel.count; i++) {
+                const item = menuModel.get(i)
+
+                if (!item.header && item.label.toLowerCase() === target) {
+                    settingsWindow.selectedIndex = item.page
+                    break
                 }
             }
         }
-        target: "settings"
     }
 
     LazyLoader {
@@ -35,151 +41,193 @@ Scope {
 
         Window {
             id: root
-            width: 1280
-            height: 720
+
+            width: Screen.width * 0.7
+            height: Screen.height * 0.75
+            minimumWidth: 900
+            minimumHeight: 600
+
             visible: true
             title: "Nucleus - Settings"
+
             color: Appearance.m3colors.m3background
+
             onClosing: Globals.states.settingsOpen = false
             Component.onCompleted: settingsWindow = root
 
             property int selectedIndex: 0
             property bool sidebarCollapsed: false
 
-            property var menuModel: [
-                { "header": true, "label": "System" },
-                { "icon": "bluetooth", "label": "Bluetooth", "page": 0 },
-                { "icon": "network_wifi", "label": "Network", "page": 1 },
-                { "icon": "volume_up", "label": "Audio", "page": 2 },
-                { "icon": "instant_mix", "label": "Appearance", "page": 3 },
+            ListModel {
+                id: menuModel
 
-                { "header": true, "label": "Customization" },
-                { "icon": "toolbar", "label": "Bar", "page": 4 },
-                { "icon": "wallpaper", "label": "Wallpapers", "page": 5 },
-                { "icon": "apps", "label": "Launcher", "page": 6 },
-                { "icon": "chat", "label": "Notifications", "page": 7 },
-                { "icon": "extension", "label": "Plugins", "page": 8 },
-                { "icon": "apps", "label": "Store", "page": 9 },
-                { "icon": "build", "label": "Miscellaneous", "page": 10 },
+                ListElement { header: true;  label: "System" }
+                ListElement { icon: "bluetooth";     label: "Bluetooth";      page: 0 }
+                ListElement { icon: "network_wifi";  label: "Network";        page: 1 }
+                ListElement { icon: "volume_up";     label: "Audio";          page: 2 }
+                ListElement { icon: "palette";       label: "Appearance";     page: 3 }
 
-                { "header": true, "label": "About" },
-                { "icon": "info", "label": "About", "page": 11 }
-            ]
+                ListElement { header: true; label: "Customization" }
+                ListElement { icon: "toolbar";      label: "Bar";            page: 4 }
+                ListElement { icon: "wallpaper";    label: "Wallpapers";     page: 5 }
+                ListElement { icon: "apps";         label: "Launcher";       page: 6 }
+                ListElement { icon: "notifications";label: "Notifications";  page: 7 }
+                ListElement { icon: "extension";    label: "Plugins";        page: 8 }
+                ListElement { icon: "store";        label: "Store";          page: 9 }
+                ListElement { icon: "build";        label: "Miscellaneous";  page: 10 }
+
+                ListElement { header: true; label: "About" }
+                ListElement { icon: "info"; label: "About"; page: 11 }
+            }
 
             Item {
                 anchors.fill: parent
+
                 Rectangle {
                     id: sidebarBG
+
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    width: root.sidebarCollapsed ? 80 : 350
+
+                    width: root.sidebarCollapsed ? 80 : 340
+
                     color: Appearance.m3colors.m3surfaceContainerLow
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Metrics.margin(40)
-                        spacing: Metrics.spacing(5)
+                        anchors.margins: 24
+                        spacing: 8
 
                         RowLayout {
                             Layout.fillWidth: true
+                            Layout.preferredHeight: 48
 
                             StyledText {
+                                visible: !root.sidebarCollapsed
                                 Layout.fillWidth: true
                                 text: "Settings"
                                 font.family: "Outfit ExtraBold"
-                                font.pixelSize: Metrics.fontSize(28)
-                                visible: !root.sidebarCollapsed
+                                font.pixelSize: 26
                             }
 
                             StyledButton {
+                                Layout.preferredWidth: 40
                                 Layout.preferredHeight: 40
-                                icon: root.sidebarCollapsed ? "chevron_right" : "chevron_left"
+
+                                icon: root.sidebarCollapsed
+                                      ? "left_panel_open"
+                                      : "left_panel_close"
+
                                 secondary: true
+
                                 onClicked: root.sidebarCollapsed = !root.sidebarCollapsed
                             }
                         }
 
                         ListView {
                             id: sidebarList
+
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            model: root.menuModel
-                            spacing: Metrics.spacing(5)
+
+                            model: menuModel
+                            spacing: 6
                             clip: true
 
                             delegate: Item {
+
                                 width: sidebarList.width
-                                height: modelData.header ? (root.sidebarCollapsed ? 0 : 30) : 42
-                                visible: !modelData.header || !root.sidebarCollapsed
+                                height: model.header
+                                        ? (root.sidebarCollapsed ? 0 : 28)
+                                        : 48
 
-                                // header
-                                Item {
-                                    width: parent.width
-                                    height: parent.height
+                                visible: !model.header || !root.sidebarCollapsed
 
-                                    StyledText {
-                                        y: (parent.height - height) * 0.5
-                                        x: 10
-                                        text: modelData.label
-                                        font.pixelSize: Metrics.fontSize(14)
-                                        font.bold: true
-                                        opacity: modelData.header ? 1 : 0
-                                    }
-
+                                StyledText {
+                                    visible: model.header && !root.sidebarCollapsed
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: model.label
+                                    font.bold: true
+                                    font.pixelSize: 13
                                 }
 
                                 Rectangle {
+
                                     anchors.fill: parent
-                                    visible: !modelData.header
-                                    radius: Appearance.rounding.large
-                                    color: root.selectedIndex === modelData.page
-                                           ? Appearance.m3colors.m3primary
+                                    visible: !model.header
+                                    radius: 24
+
+                                    color: root.selectedIndex === model.page
+                                           ? Appearance.m3colors.m3secondaryContainer
                                            : "transparent"
 
                                     RowLayout {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 10
-                                        spacing: 10
 
-                                        MaterialSymbol {
-                                            visible: !modelData.header
-                                            icon: modelData.icon ? modelData.icon : ""
-                                            iconSize: Metrics.iconSize(24)
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 12
+                                        anchors.rightMargin: 12
+                                        spacing: 16
+
+                                        Item {
+                                            width: 48
+                                            height: 48
+
+                                            visible: !root.sidebarCollapsed
+
+                                            MaterialSymbol {
+                                                anchors.centerIn: parent
+                                                icon: model.icon
+                                                iconSize: 24
+                                            }
                                         }
 
                                         StyledText {
-                                            text: modelData.label
                                             visible: !root.sidebarCollapsed
+                                            Layout.fillWidth: true
+                                            text: model.label
+                                            font.pixelSize: 14
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+
+                                    Item {
+                                        visible: root.sidebarCollapsed
+                                        anchors.fill: parent
+
+                                        MaterialSymbol {
+                                            anchors.centerIn: parent
+                                            icon: model.icon
+                                            iconSize: 24
                                         }
                                     }
                                 }
 
-                                MouseArea {
-                                    anchors.fill: parent
-                                    enabled: modelData.page !== undefined
-                                    onClicked: {
-                                        root.selectedIndex = modelData.page
-                                        settingsStack.currentIndex = modelData.page
-                                    }
+                                TapHandler {
+                                    enabled: model.page !== undefined
+                                    onTapped: root.selectedIndex = model.page
                                 }
                             }
                         }
                     }
 
                     Behavior on width {
-                        NumberAnimation { duration: 180; easing.type: Easing.InOutCubic }
+                        NumberAnimation {
+                            duration: 180
+                            easing.type: Easing.InOutCubic
+                        }
                     }
                 }
 
-
                 StackLayout {
                     id: settingsStack
+
                     anchors.left: sidebarBG.right
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
+
                     currentIndex: root.selectedIndex
 
                     BluetoothConfig    { Layout.fillWidth: true; Layout.fillHeight: true }
