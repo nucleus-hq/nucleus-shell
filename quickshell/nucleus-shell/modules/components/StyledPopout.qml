@@ -1,327 +1,301 @@
-import qs.config
 import QtQuick
-import QtQuick.Effects
+import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Widgets
-import Quickshell.Wayland
+import QtQuick.Effects
+import qs.config
+import qs.modules.functions
 
-LazyLoader {
+Item {
     id: root
+    width: 200
+    height: 56
 
-    property string displayName: screen?.name ?? ""
-    property PanelWindow instance: null
-    property HoverHandler hoverTarget
-    property real margin: Metrics.margin(10)
-    default property list<Component> content
-    property bool startAnim: false
-    property bool isVisible: false
-    property bool keepAlive: false
-    property bool interactable: false
-    property bool hasHitbox: true
-    property bool hCenterOnItem: false
-    property bool followMouse: false
-    property list<StyledPopout> childPopouts: []
+    property string label: "Select option"
+    property var model: ["Option 1","Option 2","Option 3","Option 4","Option 5"]
+    property int currentIndex: -1
+    property bool enabled: true
+    property string textRole: ""
 
-    property bool requiresHover: true
-    property bool _manualControl: false
-    property int hoverDelay: Metrics.chronoDuration(250)
+    property int radius: Metrics.radius(18)
 
-    property bool targetHovered: hoverTarget && hoverTarget.hovered
-    property bool containerHovered: interactable && root.item && root.item.containerHovered
-    property bool selfHovered: targetHovered || containerHovered
+    property string currentText: {
+        if (currentIndex < 0)
+            return ""
 
-    property bool childrenHovered: {
-        for (let i = 0; i < childPopouts.length; i++) {
-            if (childPopouts[i].selfHovered)
-                return true;
-        }
-        return false;
+        if (textRole && model && model.get)
+            return model.get(currentIndex)[textRole] ?? ""
+
+        return model[currentIndex] ?? ""
     }
 
-    property bool hoverActive: selfHovered || childrenHovered
+    signal selectedIndexChanged(int index)
 
-    property Timer showDelayTimer: Timer {
-        interval: root.hoverDelay
-        repeat: false
-        onTriggered: {
-            root.keepAlive = true;
-            root.isVisible = true;
-            root.startAnim = true;
-        }
-    }
+    Rectangle {
+        id: container
+        anchors.fill: parent
 
-    property Timer hangTimer: Timer {
-        interval: Metrics.chronoDuration(200)
-        repeat: false
-        onTriggered: {
-            root.startAnim = false;
-            cleanupTimer.restart();
-        }
-    }
-
-    property Timer cleanupTimer: Timer {
-        interval: Metrics.chronoDuration("small") 
-        repeat: false
-        onTriggered: {
-            root.isVisible = false;
-            root.keepAlive = false;
-            root._manualControl = false;
-            root.instance = null;
-        }
-    }
-
-    onHoverActiveChanged: {
-        if (_manualControl)
-            return;
-        if (!requiresHover)
-            return;
-        if (hoverActive) {
-            hangTimer.stop();
-            cleanupTimer.stop();
-            if (hoverDelay > 0) {
-                showDelayTimer.restart();
-            } else {
-                root.keepAlive = true;
-                root.isVisible = true;
-                root.startAnim = true;
-            }
-        } else {
-            showDelayTimer.stop();
-            hangTimer.restart();
-        }
-    }
-
-    function show() {
-        hangTimer.stop();
-        cleanupTimer.stop();
-        showDelayTimer.stop();
-        _manualControl = true;
-        keepAlive = true;
-        isVisible = true;
-        startAnim = true;
-    }
-
-    function hide() {
-        _manualControl = true;
-        showDelayTimer.stop();
-        startAnim = false;
-        hangTimer.stop();
-        cleanupTimer.restart();
-    }
-
-    active: keepAlive
-
-    component: PanelWindow {
-        id: popoutWindow
-
+        radius: root.radius
         color: "transparent"
-        visible: root.isVisible
 
-        WlrLayershell.namespace: "whisker:popout"
-        WlrLayershell.layer: WlrLayer.Overlay
-        exclusionMode: ExclusionMode.Ignore
-        exclusiveZone: 0
+        border.color: dropdown.activeFocus
+                      ? Appearance.m3colors.m3primary
+                      : Appearance.m3colors.m3outline
+        border.width: dropdown.activeFocus ? 2 : 1
 
-        anchors {
-            left: true
-            top: true
-            right: true
-            bottom: true
-        }
+        clip: true
 
-        property bool exceedingHalf: false
-        property var parentPopoutWindow: null
-        property point mousePos: Qt.point(0, 0)
-        property bool containerHovered: root.interactable && containerHoverHandler.hovered
-
-        HoverHandler {
-            id: windowHover
-            onPointChanged: point => {
-                if (root.followMouse)
-                    popoutWindow.mousePos = point.position;
+        Behavior on border.color {
+            enabled: Config.runtime.appearance.animations.enabled
+            ColorAnimation {
+                duration: Metrics.chronoDuration("small")
+                easing.type: Easing.InOutCubic
             }
         }
 
-        mask: Region {
-            x: !root.hasHitbox ? 0 : !requiresHover ? 0 : container.x
-            y: !root.hasHitbox ? 0 : !requiresHover ? 0 : container.y
-            width: !root.hasHitbox ? 0 : !requiresHover ? popoutWindow.width : container.implicitWidth
-            height: !root.hasHitbox ? 0 : !requiresHover ? popoutWindow.height : container.implicitHeight
+        Behavior on border.width {
+            enabled: Config.runtime.appearance.animations.enabled
+            NumberAnimation {
+                duration: Metrics.chronoDuration("small")
+                easing.type: Easing.InOutCubic
+            }
         }
+
         MouseArea {
             id: mouseArea
             anchors.fill: parent
-            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-            hoverEnabled: false
+            enabled: root.enabled
+            hoverEnabled: true
 
-            onPressed: mouse => {
-                if (!containerHoverHandler.containsMouse && root.isVisible) {
-                    root.hide();
+            onClicked: {
+                dropdown.popup.visible
+                    ? dropdown.popup.close()
+                    : dropdown.popup.open()
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                radius: container.radius
+
+                color: Appearance.m3colors.m3primary
+
+                opacity:
+                    mouseArea.pressed ? 0.12 :
+                    mouseArea.containsMouse ? 0.08 : 0
+
+                Behavior on opacity {
+                    enabled: Config.runtime.appearance.animations.enabled
+                    NumberAnimation {
+                        duration: Metrics.chronoDuration("small")
+                        easing.type: Easing.InOutCubic
+                    }
                 }
             }
         }
-        Item {
-            id: container
 
-            implicitWidth: contentArea.implicitWidth + root.margin * 2
-            implicitHeight: contentArea.implicitHeight + root.margin * 2
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: Metrics.margin(16)
+            anchors.rightMargin: Metrics.margin(12)
 
-            x: {
-                let xValue;
+            spacing: Metrics.spacing(12)
 
-                if (root.followMouse)
-                    xValue = mousePos.x + 10;
-                else {
-                    let targetItem = hoverTarget?.parent;
-                    if (!targetItem)
-                        xValue = 0;
-                    else {
-                        let baseX = targetItem.mapToGlobal(Qt.point(0, 0)).x;
-                        if (parentPopoutWindow)
-                            baseX += parentPopoutWindow.x;
+            StyledText {
+                id: labelText
 
-                        let targetWidth = targetItem.width;
-                        let popupWidth = container.implicitWidth;
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
 
-                        if (root.hCenterOnItem) {
-                            let centeredX = baseX + (targetWidth - popupWidth) / 2;
-                            if (centeredX + popupWidth > screen.width)
-                                centeredX = screen.width - popupWidth - 10;
-                            if (centeredX < 10)
-                                centeredX = 10;
-                            xValue = centeredX;
-                        } else {
-                            let xPos = baseX - ((ConfigResolver.bar(root.displayName).position === "top" || ConfigResolver.bar(root.displayName).position === "top") ? 20 : -40);
-                            if (xPos + popupWidth > screen.width) {
-                                exceedingHalf = true;
-                                xValue = baseX - popupWidth;
-                            } else {
-                                exceedingHalf = false;
-                                xValue = xPos;
+                text: root.currentIndex >= 0
+                      ? root.currentText
+                      : root.label
+
+                color:
+                    root.currentIndex >= 0
+                    ? Appearance.m3colors.m3onSurface
+                    : ColorUtils.transparentize(
+                        Appearance.m3colors.m3onSurfaceVariant,
+                        0.7
+                      )
+
+                font.pixelSize: Metrics.fontSize(16)
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            MaterialSymbol {
+                Layout.alignment: Qt.AlignVCenter
+
+                icon:
+                    dropdown.popup.visible
+                    ? "arrow_drop_up"
+                    : "arrow_drop_down"
+
+                iconSize: Metrics.iconSize(20)
+                color: Appearance.m3colors.m3onSurfaceVariant
+            }
+        }
+    }
+
+    ComboBox {
+        id: dropdown
+        visible: false
+
+        model: root.model
+        currentIndex: root.currentIndex >= 0 ? root.currentIndex : -1
+        enabled: root.enabled
+        textRole: root.textRole
+
+        onCurrentIndexChanged: {
+            if (currentIndex >= 0) {
+                root.currentIndex = currentIndex
+                root.selectedIndexChanged(currentIndex)
+            }
+        }
+
+        popup: Popup {
+            y: root.height + 6
+            width: root.width
+            padding: 0
+
+            background: Rectangle {
+                radius: Metrics.radius(16)
+
+                color: Appearance.m3colors.m3surfaceContainer
+
+                border.color: Appearance.m3colors.m3outline
+                border.width: 1
+
+                layer.enabled: true
+
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: ColorUtils.transparentize(
+                        Appearance.m3colors.m3shadow, 0.25)
+                    shadowBlur: 0.4
+                    shadowVerticalOffset: 8
+                    shadowHorizontalOffset: 0
+                }
+            }
+
+            contentItem: ListView {
+                id: listView
+
+                clip: true
+
+                implicitHeight: Math.min(contentHeight, 300)
+
+                model: dropdown.popup.visible ? dropdown.model : []
+
+                currentIndex: Math.max(0, dropdown.currentIndex)
+
+                ScrollBar.vertical: ScrollBar {
+                    policy: ScrollBar.AsNeeded
+                }
+
+                delegate: ItemDelegate {
+                    width: listView.width
+                    height: 48
+
+                    background: Rectangle {
+
+                        radius: Metrics.radius(10)
+
+                        color: {
+                            if (itemMouse.pressed)
+                                return ColorUtils.transparentize(
+                                    Appearance.m3colors.m3primaryContainer,0.12)
+
+                            if (itemMouse.containsMouse)
+                                return ColorUtils.transparentize(
+                                    Appearance.m3colors.m3primaryContainer,0.08)
+
+                            if (index === root.currentIndex)
+                                return ColorUtils.transparentize(
+                                    Appearance.m3colors.m3primaryContainer,0.08)
+
+                            return "transparent"
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Metrics.chronoDuration("small")
+                                easing.type: Easing.InOutCubic
                             }
                         }
                     }
-                }
 
-                return root.cleanupTimer.running ? xValue : Math.round(xValue);
-            }
+                    contentItem: StyledText {
+                        text: modelData
 
-            y: {
-                let yValue;
+                        color:
+                            index === root.currentIndex
+                            ? Appearance.m3colors.m3primary
+                            : Appearance.m3colors.m3onSurface
 
-                if (root.followMouse)
-                    yValue = mousePos.y + 10;
-                else {
-                    let targetItem = hoverTarget?.parent;
-                    if (!targetItem)
-                        yValue = 0;
-                    else {
-                        let baseY = targetItem.mapToGlobal(Qt.point(0, 0)).y;
-                        if (parentPopoutWindow)
-                            baseY += parentPopoutWindow.y;
+                        font.pixelSize: Metrics.fontSize(16)
+                        verticalAlignment: Text.AlignVCenter
 
-                        let targetHeight = targetItem.height;
-                        let popupHeight = container.implicitHeight;
+                        leftPadding: Metrics.margin(16)
+                    }
 
-                        let yPos = baseY + ((ConfigResolver.bar(root.displayName).position === "top" || ConfigResolver.bar(root.displayName).position === "top") ? targetHeight : 0);
+                    MouseArea {
+                        id: itemMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
 
-                        if (yPos > screen.height / 2)
-                            yPos = baseY - popupHeight;
-
-                        if (yPos + popupHeight > screen.height)
-                            yPos = screen.height - popupHeight - 10;
-                        if (yPos < 10)
-                            yPos = 10;
-
-                        yValue = yPos;
+                        onClicked: {
+                            dropdown.currentIndex = index
+                            dropdown.popup.close()
+                        }
                     }
                 }
-
-                return root.cleanupTimer.running ? yValue : Math.round(yValue);
             }
 
+            enter: Transition {
+                enabled: Config.runtime.appearance.animations.enabled
 
-
-            opacity: root.startAnim ? 1 : 0
-            scale: root.interactable ? 1 : root.startAnim ? 1 : 0.9
-
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowOpacity: 1
-                shadowColor: Appearance.m3colors.m3shadow
-                shadowBlur: 1
-                shadowScale: 1
-            }
-
-            Behavior on opacity {
                 NumberAnimation {
-                    duration: Metrics.chronoDuration("small") 
-                    easing.type: Appearance.animation.easing
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: Metrics.chronoDuration("small")
+                    easing.type: Easing.InOutCubic
                 }
-            }
-            Behavior on scale {
-                enabled: !root.interactable
+
                 NumberAnimation {
-                    duration: Metrics.chronoDuration("small") 
-                    easing.type: Appearance.animation.easing
-                }
-            }
-            Behavior on implicitWidth {
-                enabled: root.interactable
-                NumberAnimation {
-                    duration: Metrics.chronoDuration("small") 
-                    easing.type: Appearance.animation.easing
-                }
-            }
-            Behavior on implicitHeight {
-                enabled: root.interactable
-                NumberAnimation {
-                    duration: Metrics.chronoDuration("small") 
-                    easing.type: Appearance.animation.easing
+                    property: "scale"
+                    from: 0.95
+                    to: 1
+                    duration: Metrics.chronoDuration("small")
+                    easing.type: Easing.InOutCubic
                 }
             }
 
-            ClippingRectangle {
-                id: popupBackground
-                anchors.fill: parent
-                color: Appearance.m3colors.m3surface
-                radius: Appearance.rounding.normal
+            exit: Transition {
+                enabled: Config.runtime.appearance.animations.enabled
 
-                ColumnLayout {
-                    id: contentArea
-                    anchors.fill: parent
-                    anchors.margins: root.margin
+                NumberAnimation {
+                    property: "opacity"
+                    from: 1
+                    to: 0
+                    duration: Metrics.chronoDuration("small")
+                    easing.type: Easing.InOutCubic
                 }
-            }
-
-            HoverHandler {
-                id: containerHoverHandler
-                enabled: root.interactable
             }
         }
+    }
 
-        Component.onCompleted: {
-            root.instance = popoutWindow;
-            for (let i = 0; i < root.content.length; i++) {
-                const comp = root.content[i];
-                if (comp && comp.createObject) {
-                    comp.createObject(contentArea);
-                } else {
-                    console.warn("StyledPopout: invalid content:", comp);
-                }
-            }
+    focus: true
 
-            let parentPopout = root.parent;
-            while (parentPopout && !parentPopout.childPopouts)
-                parentPopout = parentPopout.parent;
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Space ||
+            event.key === Qt.Key_Return) {
 
-            if (parentPopout) {
-                parentPopout.childPopouts.push(root);
-                if (parentPopout.item)
-                    popoutWindow.parentPopoutWindow = parentPopout.item;
-            }
+            dropdown.popup.visible
+                ? dropdown.popup.close()
+                : dropdown.popup.open()
+
+            event.accepted = true
         }
     }
 }
