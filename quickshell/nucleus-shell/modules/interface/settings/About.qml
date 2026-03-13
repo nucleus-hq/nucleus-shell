@@ -5,7 +5,6 @@ import Quickshell
 import Quickshell.Widgets
 import qs.config
 import qs.modules.components
-import qs.config
 import qs.services
 
 Item {
@@ -13,12 +12,14 @@ Item {
 
     Layout.fillWidth: true
     Layout.fillHeight: true
+
     property int logoOffset: -30
 
     Column {
         anchors.centerIn: parent
         width: 460
-        spacing: Metrics.spacing(12)
+        spacing: Metrics.spacing(14)
+
         Item {
             width: parent.width
             height: Metrics.fontSize(200)
@@ -45,11 +46,12 @@ Item {
             wrapMode: Text.Wrap
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Metrics.fontSize(14)
+            color: Appearance.m3colors.m3onSurfaceVariant
         }
 
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: Metrics.spacing(10)
+            spacing: Metrics.spacing(12)
 
             StyledButton {
                 text: "View on GitHub"
@@ -64,9 +66,7 @@ Item {
                 secondary: true
                 onClicked: Qt.openUrlExternally("https://github.com/xZepyx/nucleus-shell/issues")
             }
-
         }
-
     }
 
     StyledText {
@@ -75,9 +75,12 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Metrics.margin(24)
         font.pixelSize: Metrics.fontSize(12)
+        color: Appearance.m3colors.m3onSurfaceVariant
     }
 
-    StyledRect {
+    Rectangle {
+        id: updateButton
+
         width: 52
         height: 52
         radius: Appearance.rounding.small
@@ -86,15 +89,30 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: Metrics.margin(24)
 
-        StyledText {
-            text: "↻"
+        color: Appearance.m3colors.m3surfaceContainer
+
+        Behavior on color {
+            ColorAnimation {
+                duration: Metrics.chronoDuration("small")
+                easing.type: Easing.InOutCubic
+            }
+        }
+
+        MaterialSymbol {
+            icon: "refresh"
             anchors.centerIn: parent
-            font.pixelSize: Metrics.fontSize(22)
+            iconSize: Metrics.iconSize(22)
+            color: Appearance.m3colors.m3onSurface
         }
 
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
+
+            onPressed: updateButton.color = Appearance.m3colors.m3surfaceContainerHighest
+            onReleased: updateButton.color = Appearance.m3colors.m3surfaceContainer
+            onEntered: updateButton.color = Appearance.m3colors.m3surfaceContainerHigh
+            onExited: updateButton.color = Appearance.m3colors.m3surfaceContainer
 
             onClicked: {
                 Globals.states.settingsOpen = false
@@ -110,6 +128,5 @@ Item {
                 ])
             }
         }
-
     }
 }
