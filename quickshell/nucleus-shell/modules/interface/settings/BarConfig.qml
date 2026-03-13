@@ -255,6 +255,12 @@ ContentCard {
         prefField: barKey + ".modules.workspaces.showJapaneseNumbers"
     }
 
+    StyledSwitchOption { 
+        title: "Dynamic Workspaces"
+        description: "Hide empty workspaces and only show occupied ones"
+        prefField: barKey + ".modules.workspaces.dynamic"
+    }
+
     StyledText { text: "Status Icons"; font.pixelSize: Metrics.fontSize(18); font.bold: true }
 
     StyledSwitchOption { 

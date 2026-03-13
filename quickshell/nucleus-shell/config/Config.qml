@@ -264,6 +264,8 @@ Singleton {
                         property int workspaceIndicators: 8
                         property bool showAppIcons: true 
                         property bool showJapaneseNumbers: false
+                        property bool dynamic: false
+
                     }
                     property JsonObject statusIcons: JsonObject {
                         property bool enabled: true
