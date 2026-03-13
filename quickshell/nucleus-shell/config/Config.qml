@@ -251,6 +251,7 @@ Singleton {
                 property bool merged: false
                 property bool floating: false
                 property bool gothCorners: true
+                property bool pill: true
                 property int radius: Appearance.rounding.large
                 property int margins: Appearance.margin.normal
                 property int density: 50

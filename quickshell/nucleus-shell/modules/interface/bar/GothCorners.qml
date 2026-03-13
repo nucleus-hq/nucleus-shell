@@ -10,6 +10,7 @@ import qs.modules.components
 PanelWindow {
     id: root
 
+    // opacity must be real
     property real opacity: 0.0
 
     color: "transparent"
