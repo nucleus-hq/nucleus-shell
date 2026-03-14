@@ -161,7 +161,7 @@ Notes:
 Contributions are welcome. When contributing:
 - Open concise issues after confirming the problem isn't caused by local configuration.
 - Submit focused PRs with clear descriptions and tests where applicable.
-- Follow code structure and naming conventions used in `dots/`.
+- Follow code structure and naming conventions used in the codebase.
 
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for full contribution guidelines.
 
@@ -204,8 +204,8 @@ Contributions are welcome. When contributing:
 
 <h2 align="center">✦ Collaborators ✦</h2>
 
-* [@Tanujairamv](https://github.com/Tanujairmv)
-* [@Saturno](https://github.com/Saturno-0)
+* [@Tanujairamv](https://github.com/Tanujairmv): Material UI "Expert"
+* [@Saturno](https://github.com/Saturno-0): Code Wizard
 
 ---
 
