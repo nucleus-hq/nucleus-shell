@@ -71,6 +71,29 @@ Item {
     }
 
     StyledRect {
+        anchors.centerIn: parent
+    
+        width: 16
+        height: 16
+        radius: width / 2
+        color: Appearance.m3colors.m3secondary
+    
+        z: 99 // ensure above other elements
+    
+        // inner dot
+        StyledRect {
+            anchors.centerIn: parent
+    
+            width: parent.width / 2
+            height: parent.height / 2
+            radius: width / 2
+            color: Appearance.m3colors.m3primaryContainer
+    
+            z: 100
+        }
+    }
+
+    StyledRect {
         width: 18
         height: parent.height * 0.35
         radius: Metrics.radius("full")
@@ -91,5 +114,29 @@ Item {
         y: analogClockContainer.cy - height
         transformOrigin: Item.Bottom
         rotation: seconds * 6
+        z: 2
+    }
+
+    Column {
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: Metrics.margin(30)
+        spacing: Metrics.margin(0)
+    
+        StyledText {
+            text: Time.format("hh")
+            font.pixelSize: Metrics.fontSize(80)
+            font.bold: true
+            opacity: 0.3
+            animate: false
+        }
+    
+        StyledText {
+            text: Time.format("mm")
+            font.pixelSize: Metrics.fontSize(80)
+            font.bold: true
+            opacity: 0.3
+            animate: false
+        }
     }
 }
