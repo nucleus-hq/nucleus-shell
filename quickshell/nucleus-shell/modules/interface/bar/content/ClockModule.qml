@@ -17,6 +17,9 @@ Item {
     property bool use24h: barConfig.modules.clock?.use24h ?? true
     property bool blink: true
 
+    property int hour24: parseInt(Time.format("HH"))
+    property int hour12: ((hour24 + 11) % 12) + 1
+
     Layout.alignment: Qt.AlignVCenter
 
     implicitWidth: background.implicitWidth
@@ -59,17 +62,18 @@ Item {
         spacing: 3
 
         StyledText {
-            text: use24h ? Time.format("HH") : Time.format("hh")
+            text: use24h
+                ? hour24.toString().padStart(2,"0")
+                : hour12.toString().padStart(2,"0")
             font.pixelSize: Appearance.font.size.small
             Layout.alignment: Qt.AlignVCenter
         }
 
         StyledText {
-            id: colon
             text: ":"
             font.pixelSize: Appearance.font.size.small
             Layout.alignment: Qt.AlignVCenter
-            opacity: clockContainer.blink ? 1 : 0
+            opacity: blink ? 1 : 0
 
             Layout.preferredWidth: implicitWidth
 
@@ -108,7 +112,9 @@ Item {
         spacing: 0
 
         StyledText {
-            text: use24h ? Time.format("HH") : Time.format("hh")
+            text: use24h
+                ? hour24.toString().padStart(2,"0")
+                : hour12.toString().padStart(2,"0")
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Appearance.font.size.small
         }
