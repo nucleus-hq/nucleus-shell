@@ -13,7 +13,13 @@ Singleton {
     id: root
 
     property list<Notif> data: []
-    property list<Notif> popups: data.filter(n => n.popup && !n.tracked)
+    property list<Notif> popups: {
+        let result = []
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].popup) result.push(data[i])
+        }
+        return result
+    }
     property list<Notif> history: data
 
     Loader {
@@ -73,11 +79,26 @@ Singleton {
         readonly property list<NotificationAction> actions: notification.actions
 
         readonly property Timer timer: Timer {
-            running: notif.actions.length >= 0
-            interval: notif.notification.expireTimeout > 0 ? notif.notification.expireTimeout : 5000
+            running: true
+            interval: {
+                if (notif.notification.expireTimeout > 0)
+                    return notif.notification.expireTimeout
+                if (notif.urgency === 2)
+                    return 15000  // critical: 15 seconds
+                return 5000
+            }
             onTriggered: {
-                if (true)
-                    notif.popup = false;
+                notif.popup = false
+            }
+        }
+
+        readonly property Connections conn2: Connections {
+            target: notif.notification
+
+            function onClosed(reason) {
+                const i = root.data.indexOf(notif)
+                if (i >= 0)
+                    root.data.splice(i, 1)
             }
         }
 
@@ -85,18 +106,13 @@ Singleton {
             target: notif.notification.Retainable
 
             function onDropped(): void {
-                root.data.splice(root.data.indexOf(notif), 1);
+                const i = root.data.indexOf(notif)
+                if (i >= 0)
+                    root.data.splice(i, 1)
             }
 
             function onAboutToDestroy(): void {
-                notif.destroy();
-            }
-        }
-        readonly property Connections conn2: Connections {
-            target: notif.notification
-
-            function onClosed(reason) {
-                root.data.splice(root.data.indexOf(notif), 1)
+                notif.destroy()
             }
         }
 

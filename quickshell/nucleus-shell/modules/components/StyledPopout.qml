@@ -1,4 +1,5 @@
 import qs.config
+import qs.services
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts

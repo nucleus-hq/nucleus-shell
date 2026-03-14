@@ -11,6 +11,7 @@ import qs.services
 
 Scope {
     id: root
+    property bool wallpaperFailed: false
 
     Variants {
         model: Quickshell.screens
@@ -181,6 +182,7 @@ Scope {
                             backgroundContainer.wallpaperWidth = implicitWidth
                             backgroundContainer.wallpaperHeight = implicitHeight
                         }
+                        root.wallpaperFailed = status === Image.Error
                     }
                 }
 
@@ -261,7 +263,8 @@ Scope {
     }
 
     Clock {
+        imageFailed: root.wallpaperFailed
         id: clock
-    }
+    }   
 
 }

@@ -17,7 +17,7 @@ Scope {
     PanelWindow {
         id: window
 
-        implicitWidth: 520
+        implicitWidth: 550
         visible: true
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
@@ -51,7 +51,7 @@ Scope {
                 anchors.rightMargin: Metrics.margin(20)
                 anchors.right: parent.right
                 height: window.mask.height > 0 ? window.mask.height + 40 : 0
-                color: Appearance.m3colors.m3background
+                color: "transparent"
                 radius: Metrics.radius("large")
 
                 layer.effect: MultiEffect {
@@ -81,42 +81,44 @@ Scope {
 
                 Repeater {
                     id: rep
-
-                    model: (!Config.runtime.notifications.doNotDisturb && Config.runtime.notifications.enabled) ? NotifServer.popups : []
+                    model: (!Config.runtime.notifications.doNotDisturb && Config.runtime.notifications.enabled) ? NotifServer.data : []
 
                     NotificationChild {
                         id: child
 
+                        required property var modelData
+                        required property int index
+
+                        visible: modelData.popup
                         width: notificationColumn.width - 80
                         anchors.horizontalCenter: notificationColumn.horizontalCenter
                         y: {
-                            var pos = 0;
+                            var pos = 0
                             for (let i = 0; i < index; i++) {
-                                var prev = rep.itemAt(i);
-                                if (prev)
-                                    pos += prev.height + root.innerSpacing;
-
+                                var prev = rep.itemAt(i)
+                                if (prev && prev.visible)
+                                    pos += prev.height + root.innerSpacing
                             }
-                            return pos + 20;
+                            return pos + 20
                         }
+
                         Component.onCompleted: {
                             if (!modelData.shown)
-                                modelData.shown = true;
-
+                                modelData.shown = true
                         }
+
                         title: modelData.summary
+                        appName: modelData.appName
+                        timestamp: Qt.formatTime(modelData.time, "hh:mm")
                         body: modelData.body
                         image: modelData.image || modelData.appIcon
+                        urgency: modelData.urgency
                         rawNotif: modelData
                         tracked: modelData.shown
-                        buttons: modelData.actions.map((action) => {
-                            return ({
-                                "label": action.text,
-                                "onClick": () => {
-                                    return action.invoke();
-                                }
-                            });
-                        })
+                        buttons: modelData.actions.map((action) => ({
+                            "label": action.text,
+                            "onClick": () => action.invoke()
+                        }))
 
                         Behavior on y {
                             enabled: Config.runtime.appearance.animations.enabled
@@ -124,11 +126,8 @@ Scope {
                                 duration: Metrics.chronoDuration("normal")
                                 easing.type: Easing.InOutExpo
                             }
-
                         }
-
                     }
-
                 }
 
             }
@@ -138,14 +137,17 @@ Scope {
         mask: Region {
             width: window.width
             height: {
-                var total = 0;
+                var total = 0
+                var visibleCount = 0
                 for (let i = 0; i < rep.count; i++) {
-                    var child = rep.itemAt(i);
-                    if (child)
-                        total += child.height + (i < rep.count - 1 ? root.innerSpacing : 0);
-
+                    var child = rep.itemAt(i)
+                    if (child && child.visible) {
+                        total += child.height
+                        if (visibleCount > 0) total += root.innerSpacing
+                        visibleCount++
+                    }
                 }
-                return total;
+                return total
             }
         }
 
