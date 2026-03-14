@@ -16,13 +16,25 @@ Rectangle {
     id: root
 
     required property LockContext context
+    property string displayName: screen?.name ?? ""
 
     color: "transparent"
 
     Image {
         anchors.fill: parent
         z: -1
-        source: Config.runtime.appearance.background.path
+        property string previewImg: {
+            const displays = Config.runtime.monitors
+            const fallback = Config.runtime.appearance.background.defaultPath
+
+            if (!displays)
+                return fallback
+
+                const monitor = displays?.[displayName]
+                return monitor?.wallpaper ?? fallback
+            }
+
+        source: previewImg + "?t=" + Date.now()
     }
 
     RowLayout {
@@ -253,7 +265,7 @@ Rectangle {
             StyledButton {
                 icon: "chevron_right"
                 padding: Metrics.padding(10)
-                radius: Metrics.radius("unsharpenmore")
+                radius: Metrics.radius("large")
                 // don't steal focus from the text box
                 focusPolicy: Qt.NoFocus
                 enabled: !root.context.unlockInProgress && root.context.currentText !== ""
