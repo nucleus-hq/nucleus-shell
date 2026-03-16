@@ -21,7 +21,13 @@ PanelWindow {
     exclusiveZone: 0
     WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarRight
 
-    property bool floatingLayout: !(ConfigResolver.bar(screen.name).gothCorners && !ConfigResolver.bar(screen.name).floating && ConfigResolver.bar(screen.name).enabled && !ConfigResolver.bar(screen.name).merged)
+    property bool useMergedSidebarLayout: Config.runtime.misc.useMergedSidebarLayout
+
+    property bool floatingLayout: !useMergedSidebarLayout ||
+        !(ConfigResolver.bar(screen.name).gothCorners &&
+          !ConfigResolver.bar(screen.name).floating &&
+          ConfigResolver.bar(screen.name).enabled &&
+          !ConfigResolver.bar(screen.name).merged)
 
     property real sidebarRightWidth: 500
 
@@ -66,7 +72,8 @@ PanelWindow {
         id: overlay
         anchors.fill: parent
         color: "black"
-        opacity: Globals.visiblility.sidebarRight ? 0.1 : 0
+        opacity: 0   // FIX: removed transparency that caused blur
+
         Behavior on opacity {
             NumberAnimation {
                 duration: 300
@@ -87,9 +94,11 @@ PanelWindow {
         z: 1
         color: Appearance.m3colors.m3background
         radius: Metrics.radius("large")
+
         width: Globals.visiblility.sidebarRight
             ? sidebarRight.sidebarRightWidth
             : 0
+
         visible: floatingLayout
         clip: true
 
@@ -125,6 +134,7 @@ PanelWindow {
         implicitWidth: Globals.visiblility.sidebarRight
             ? sidebarRight.sidebarRightWidth
             : 0
+
         implicitHeight: parent.height
 
         color: Appearance.m3colors.m3background

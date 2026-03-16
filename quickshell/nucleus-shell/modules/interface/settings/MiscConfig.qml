@@ -35,7 +35,6 @@ ContentMenu {
                     text: releaseChannelSelector.description
                     font.pixelSize: Metrics.fontSize(12)
                 }
-
             }
 
             Item {
@@ -51,23 +50,22 @@ ContentMenu {
                     UpdateNotifier.notified = false;
                 }
             }
-
         }
-
     }
 
-    /*ContentCard {
+    ContentCard {
         StyledText {
             text: "Sidebar Layout"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
-        }    
+        }
+
         StyledSwitchOption {
             title: "Merged Layout"
             description: "Use merged layout for sidebars when bar is merged."
             prefField: "misc.useMergedSidebarLayout"
         }
-    }*/
+    }
 
     ContentCard {
         StyledText {
@@ -81,7 +79,6 @@ ContentMenu {
             description: "Enable or disable intelligence."
             prefField: "misc.intelligence.enabled"
         }
-
     }
 
     ContentCard {
@@ -98,15 +95,18 @@ ContentMenu {
             horizontalAlignment: Text.AlignLeft
             placeholderText: Config.runtime.misc.intelligence.apiKey !== "" ? Config.runtime.misc.intelligence.apiKey : "Bearer Key"
             Layout.fillWidth: true
+
             Keys.onPressed: (event) => {
                 if ((event.key === Qt.Key_S && (event.modifiers & Qt.ControlModifier)) ||
                     event.key === Qt.Key_Return ||
                     event.key === Qt.Key_Enter) {
+
                     event.accepted = true;
                     Config.updateKey("misc.intelligence.apiKey", apiKeyTextField.text);
                     Quickshell.execDetached(["notify-send", "Saved Bearer/API Key"])
                 }
             }
+
             font.pixelSize: Metrics.fontSize(16)
         }
 
@@ -118,7 +118,5 @@ ContentMenu {
             title: "How to save the api key"
             description: "In order to save the api key press Enter/Return and it will save the api key to the config."
         }
-
     }
-
 }

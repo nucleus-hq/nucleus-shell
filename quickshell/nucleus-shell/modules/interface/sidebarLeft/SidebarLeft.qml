@@ -16,7 +16,13 @@ PanelWindow {
 
     property real sidebarLeftWidth: 520
 
-    property bool floatingLayout: !(ConfigResolver.bar(screen.name).gothCorners && !ConfigResolver.bar(screen.name).floating && ConfigResolver.bar(screen.name).enabled && !ConfigResolver.bar(screen.name).merged)
+    property bool useMergedSidebarLayout: Config.runtime.misc.useMergedSidebarLayout
+
+    property bool floatingLayout: !useMergedSidebarLayout ||
+        !(ConfigResolver.bar(screen.name).gothCorners &&
+          !ConfigResolver.bar(screen.name).floating &&
+          ConfigResolver.bar(screen.name).enabled &&
+          !ConfigResolver.bar(screen.name).merged)
 
     function togglesidebarLeft() {
         Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft
@@ -64,7 +70,8 @@ PanelWindow {
         id: overlay
         anchors.fill: parent
         color: "black"
-        opacity: Globals.visiblility.sidebarLeft ? 0.1 : 0
+        opacity: 0   // FIX: removed transparency that caused blur
+
         Behavior on opacity {
             NumberAnimation {
                 duration: 300
@@ -85,9 +92,11 @@ PanelWindow {
         z: 1
         color: Appearance.m3colors.m3background
         radius: Metrics.radius("large")
+
         width: Globals.visiblility.sidebarLeft
             ? sidebarLeft.sidebarLeftWidth
             : 0
+
         visible: floatingLayout
         clip: true
 
@@ -123,6 +132,7 @@ PanelWindow {
         implicitWidth: Globals.visiblility.sidebarLeft
             ? sidebarLeft.sidebarLeftWidth
             : 0
+
         implicitHeight: parent.height
 
         color: Appearance.m3colors.m3background
@@ -148,6 +158,7 @@ PanelWindow {
         Item { // prevents bleeding
             anchors.fill: parent
             clip: true
+
             FocusScope {
                 focus: true
                 anchors.fill: parent
