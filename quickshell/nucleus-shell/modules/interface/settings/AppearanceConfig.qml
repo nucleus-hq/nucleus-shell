@@ -64,7 +64,7 @@ ContentMenu {
                         } else {
                             Config.updateKey("appearance.theme", "dark")
                             Quickshell.execDetached([
-                                "nucleus", "ipc", "call", "global", "regenColors"
+                                "nucleus", "ipc", "call", "global", "regenColors", root.screen.name
                             ])
                         }
                     }
@@ -96,7 +96,7 @@ ContentMenu {
                         } else {
                             Config.updateKey("appearance.theme", "light")
                             Quickshell.execDetached([
-                                "nucleus", "ipc", "call", "global", "regenColors"
+                                "nucleus", "ipc", "call", "global", "regenColors", root.screen.name
                             ])
                         }
                     }
@@ -149,7 +149,7 @@ ContentMenu {
                     const selectedScheme = model[index]
                     Config.updateKey("appearance.colors.matugenScheme", selectedScheme)
                     Quickshell.execDetached([
-                        "nucleus", "ipc", "call", "global", "regenColors"
+                        "nucleus", "ipc", "call", "global", "regenColors", root.screen.name
                     ])
                 }
 

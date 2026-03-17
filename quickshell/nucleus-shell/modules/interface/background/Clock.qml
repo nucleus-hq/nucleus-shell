@@ -40,6 +40,7 @@ Scope {
                 !imageFailed
             )
 
+            visible: (Config.runtime.appearance.background.clock.enabled && Config.initialized && !root.imageFailed)
             exclusiveZone: 0
             WlrLayershell.layer: WlrLayer.Bottom
             screen: modelData

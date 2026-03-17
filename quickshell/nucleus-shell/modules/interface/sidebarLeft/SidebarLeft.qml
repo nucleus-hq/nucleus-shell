@@ -22,10 +22,9 @@ PanelWindow {
 
     WlrLayershell.namespace: "nucleus:sidebarLeft"
     WlrLayershell.layer: WlrLayer.Top
-    visible: Config.initialized && Globals.visiblility.sidebarLeft && !Globals.visiblility.sidebarRight
+    visible: Config.initialized && Globals.visiblility.sidebarLeft
     color: "transparent"
     exclusiveZone: 0
-    implicitWidth: sidebarLeftWidth
     WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarLeft
 
     HyprlandFocusGrab {
@@ -37,9 +36,9 @@ PanelWindow {
 
     anchors {
         top: true
-        left: (Config.runtime.bar.position === "left" || Config.runtime.bar.position === "bottom" || Config.runtime.bar.position === "top")
+        left: true
         bottom: true
-        right: (Config.runtime.bar.position === "right")
+        right: true
     }
 
     margins {
@@ -49,13 +48,25 @@ PanelWindow {
         left: Metrics.margin("small")
     }
 
+    MouseArea {
+        anchors.fill: parent
+        z: 0
+        onPressed: Globals.visiblility.sidebarLeft = false
+    }
+
     StyledRect {
         id: container
 
         color: Appearance.m3colors.m3background
         radius: Metrics.radius("normal")
-        implicitWidth: sidebarLeft.sidebarLeftWidth
-        anchors.fill: parent
+        width: sidebarLeft.sidebarLeftWidth
+        clip: true
+
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: parent.left
+        }
 
         FocusScope {
             focus: true 

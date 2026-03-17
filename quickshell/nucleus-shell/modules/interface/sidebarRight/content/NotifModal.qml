@@ -35,9 +35,10 @@ StyledRect {
         secondary: true
 
         onClicked: {
-            for (let i = 0; i < NotifServer.history.length; i++) {
-                let n = NotifServer.history[i];
-                if (n?.notification) n.notification.dismiss();
+            const snapshot = NotifServer.data.slice()
+            for (let i = 0; i < snapshot.length; i++) {
+                const n = snapshot[i]
+                if (n?.notification) n.notification.dismiss()
             }
         }
     }
@@ -66,14 +67,14 @@ StyledRect {
         anchors.left: parent.left
         anchors.bottomMargin: Metrics.margin(15)
         anchors.leftMargin: Metrics.margin(15)
-        text: NotifServer.history.length + " Notifications"
+        text: NotifServer.data.length + " Notifications"
 
     }
 
     StyledText {
         anchors.centerIn: parent
         text: "No notifications"
-        visible: NotifServer.history.length < 1
+        visible: NotifServer.data.length < 1
         font.pixelSize: Metrics.fontSize("huge")
     }
 
@@ -95,12 +96,19 @@ StyledRect {
             : []
 
         delegate: NotificationChild {
+            required property var modelData
+
             width: notifList.width
-            title: model.summary
-            body: model.body
-            image: model.image || model.appIcon
-            rawNotif: model
-            buttons: model.actions.map((action) => ({
+            tracked: true
+            title: modelData.summary
+            body: modelData.body
+            appName: modelData.appName
+            isHistory: true
+            timestamp: Qt.formatTime(modelData.time, "hh:mm")
+            urgency: modelData.urgency
+            image: modelData.image || modelData.appIcon
+            rawNotif: modelData
+            buttons: modelData.actions.map((action) => ({
                 "label": action.text,
                 "onClick": () => action.invoke()
             }))
