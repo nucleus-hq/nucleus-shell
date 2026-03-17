@@ -1,7 +1,6 @@
 import qs.config
 import qs.services
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
@@ -274,14 +273,6 @@ LazyLoader {
             opacity: root.startAnim ? 1 : 0
             scale: root.interactable ? 1 : root.startAnim ? 1 : 0.9
 
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowOpacity: 1
-                shadowColor: Appearance.m3colors.m3shadow
-                shadowBlur: 1
-                shadowScale: 1
-            }
 
             Behavior on opacity {
                 NumberAnimation {
