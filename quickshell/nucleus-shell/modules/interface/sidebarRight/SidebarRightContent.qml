@@ -13,8 +13,8 @@ import Qt5Compat.GraphicalEffects
 import "content/"
 
 Item {
+    id: root
     anchors.fill: parent
-    anchors.leftMargin: Metrics.margin("normal")
     anchors.rightMargin: Metrics.margin("normal")
     anchors.topMargin: Metrics.margin("large")
     anchors.bottomMargin: Metrics.margin("large")

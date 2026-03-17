@@ -52,7 +52,7 @@ Singleton {
 
         function tH(c) {
             return root.transparentize
-                ? ColorUtils.transparentize(c, root.alpha + .2) // Totally transparent
+                ? ColorUtils.transparentize(c, root.alpha + .2)
                 : c
         }
 

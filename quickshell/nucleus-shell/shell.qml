@@ -62,13 +62,13 @@ ShellRoot {
     LazyLoader {
         id: sidebarRightLoader
         source: Contracts.sidebarRight
-        active: Globals.visiblility.sidebarRight && !Contracts.overriddenSidebarRight
+        active: !Contracts.overriddenSidebarRight
     }
 
     LazyLoader {
         id: sidebarLeftLoader
         source: Contracts.sidebarLeft
-        active: Globals.visiblility.sidebarLeft && !Contracts.overriddenSidebarLeft
+        active: !Contracts.overriddenSidebarLeft
     }
 
     LazyLoader {

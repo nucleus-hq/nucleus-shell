@@ -16,11 +16,19 @@ PanelWindow {
     id: sidebarRight
     WlrLayershell.namespace: "nucleus:sidebarRight"
     WlrLayershell.layer: WlrLayer.Top
-    visible: Config.initialized && Globals.visiblility.sidebarRight
+    visible: Config.initialized
     color: "transparent"
     exclusiveZone: 0
     WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarRight
-    
+
+    property bool useMergedSidebarLayout: Config.runtime.misc.useMergedSidebarLayout
+
+    property bool floatingLayout: !useMergedSidebarLayout ||
+        !(ConfigResolver.bar(screen.name).gothCorners &&
+          !ConfigResolver.bar(screen.name).floating &&
+          ConfigResolver.bar(screen.name).enabled &&
+          !ConfigResolver.bar(screen.name).merged)
+
     property real sidebarRightWidth: 500
 
     HyprlandFocusGrab {
@@ -37,10 +45,10 @@ PanelWindow {
     }
 
     margins {
-        top: Config.runtime.bar.margins
-        bottom: Config.runtime.bar.margins
-        left: Metrics.margin("small")
-        right: Metrics.margin("small")
+        top: floatingLayout ? Config.runtime.bar.margins : 0
+        bottom: floatingLayout ? Config.runtime.bar.margins : 0
+        left: floatingLayout ? Metrics.margin("small") : 0
+        right: floatingLayout ? Metrics.margin("small") : 0
     }
 
     PwObjectTracker {
@@ -49,19 +57,50 @@ PanelWindow {
 
     property var sink: Pipewire.defaultAudioSink?.audio
 
+    component Anim: NumberAnimation {
+        duration: 300
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Appearance.animation.curves.standard
+    }
 
-    MouseArea {
+    mask: Region { 
+        item: overlay
+        intersection: Globals.visiblility.sidebarRight ? Intersection.Combine : Intersection.Xor
+    }
+
+    Rectangle {
+        id: overlay
         anchors.fill: parent
-        z: 0
-        onPressed: Globals.visiblility.sidebarRight = false
+        color: "black"
+        opacity: 0   // FIX: removed transparency that caused blur
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: Globals.visiblility.sidebarRight
+            onClicked: {
+                Globals.visiblility.sidebarRight = false
+            }
+        }
     }
 
     StyledRect {
-        id: container
+        id: floatingContainer
         z: 1
         color: Appearance.m3colors.m3background
         radius: Metrics.radius("large")
-        width: sidebarRight.sidebarRightWidth
+
+        width: Globals.visiblility.sidebarRight
+            ? sidebarRight.sidebarRightWidth
+            : 0
+
+        visible: floatingLayout
+        clip: true
 
         anchors {
             top: parent.top
@@ -84,7 +123,51 @@ PanelWindow {
                 }
             }
 
-            SidebarRightContent { }
+            SidebarRightContent { anchors.leftMargin: Metrics.margin("normal") }
+        }
+    }
+
+    MergedEdgeRect {
+        id: container
+        visible: implicitWidth > 0 && !floatingLayout
+
+        implicitWidth: Globals.visiblility.sidebarRight
+            ? sidebarRight.sidebarRightWidth
+            : 0
+
+        implicitHeight: parent.height
+
+        color: Appearance.m3colors.m3background
+        cornerRadius: Metrics.radius("large")
+
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            right: parent.right
+        }
+
+        Behavior on implicitWidth {
+            Anim {}
+        }
+
+        clip: true
+
+        MouseArea {
+            anchors.fill: parent
+            onPressed: mouse.accepted = true
+        }
+
+        FocusScope {
+            focus: true
+            anchors.fill: parent
+
+            Keys.onPressed: {
+                if (event.key === Qt.Key_Escape) {
+                    Globals.visiblility.sidebarRight = false
+                }
+            }
+
+            SidebarRightContent {}
         }
     }
 

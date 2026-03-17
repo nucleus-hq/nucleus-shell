@@ -8,10 +8,6 @@ import qs.modules.components
 Scope {
     id: root
 
-    GothCorners {
-        opacity: ConfigResolver.bar(bar.displayName).gothCorners && !ConfigResolver.bar(bar.displayName).floating && ConfigResolver.bar(bar.displayName).enabled && !ConfigResolver.bar(bar.displayName).merged ? 1 : 0
-    }
-
     Variants {
         model: Quickshell.screens
 
@@ -87,6 +83,10 @@ Scope {
 
                     return 0;
                 }
+            }
+
+            GothCorners {
+                opacity: ConfigResolver.bar(bar.displayName).gothCorners && !ConfigResolver.bar(bar.displayName).floating && ConfigResolver.bar(bar.displayName).enabled && !ConfigResolver.bar(bar.displayName).merged ? 1 : 0
             }
 
             StyledRect {

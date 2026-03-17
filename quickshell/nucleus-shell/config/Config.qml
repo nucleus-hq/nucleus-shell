@@ -218,11 +218,13 @@ Singleton {
 
             property JsonObject misc: JsonObject { 
                 property url pfp: Quickshell.env("HOME") + "/.face.icon" 
+                property bool useMergedSidebarLayout: false // use merged sidebar layout when bar is merged
                 property JsonObject intelligence: JsonObject {
                     property bool enabled: true
                     property string apiKey: ""
                 }
             }
+
             
             property JsonObject notifications: JsonObject {
                 property bool enabled: true 

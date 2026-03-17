@@ -12,6 +12,7 @@ import qs.services
 
 Item {
     anchors.fill: parent
+    anchors.leftMargin: 16
 
     SwipeView {
         id: view
