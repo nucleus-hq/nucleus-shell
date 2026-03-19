@@ -6,19 +6,20 @@ import qs.modules.components
 import qs.services
 
 ContentMenu {
+    id: root
+
     title: "Network"
     description: "Manage network connections."
 
     ContentCard {
         ContentRowCard {
-            cardSpacing: Metrics.spacing(0)
-            verticalPadding: Network.wifiEnabled ? Metrics.padding(10) : Metrics.padding(0)
-            cardMargin: Metrics.margin(0)
+            cardSpacing: 0
+            cardMargin: 0
 
             StyledText {
                 text: powerSwitch.checked ? "Wi-Fi: On" : "Wi-Fi: Off"
                 font.pixelSize: Metrics.fontSize(16)
-                font.bold: true
+                font.weight: Font.Medium
             }
 
             Item { Layout.fillWidth: true }
@@ -32,24 +33,22 @@ ContentMenu {
 
         ContentRowCard {
             visible: Network.wifiEnabled
-            cardSpacing: Metrics.spacing(0)
-            verticalPadding: Metrics.padding(10)
-            cardMargin: Metrics.margin(0)
+            cardSpacing: 0
+            cardMargin: 0
 
             ColumnLayout {
-                spacing: Metrics.spacing(2)
+                spacing: 2
 
                 StyledText {
                     text: "Scanning"
-                    font.pixelSize: Metrics.fontSize(16)
+                    font.pixelSize: Metrics.fontSize(15)
+                    font.weight: Font.Medium
                 }
 
                 StyledText {
-                    text: "Search for nearby Wi-Fi networks."
+                    text: "Search for nearby Wi-Fi networks"
                     font.pixelSize: Metrics.fontSize(12)
-                    color: ColorUtils.transparentize(
-                        Appearance.m3colors.m3onSurface, 0.4
-                    )
+                    color: Appearance.m3colors.m3onSurfaceVariant
                 }
             }
 
@@ -57,10 +56,7 @@ ContentMenu {
 
             StyledSwitch {
                 checked: Network.scanning
-                onToggled: {
-                    if (checked)
-                        Network.rescan()
-                }
+                onToggled: if (checked) Network.rescan()
             }
         }
     }
@@ -68,9 +64,9 @@ ContentMenu {
     InfoCard {
         visible: Network.message !== "" && Network.message !== "ok"
         icon: "error"
-        backgroundColor: Appearance.m3colors.m3error
-        contentColor: Appearance.m3colors.m3onError
-        title: "Failed to connect to " + Network.lastNetworkAttempt
+        containerColor: Appearance.m3colors.m3errorContainer
+        contentColor: Appearance.m3colors.m3onErrorContainer
+        title: "Failed to connect to " + (Network.lastNetworkAttempt || "")
         description: Network.message
     }
 
@@ -80,27 +76,28 @@ ContentMenu {
         StyledText {
             text: "Active Connection"
             font.pixelSize: Metrics.fontSize(18)
-            font.bold: true
+            font.weight: Font.DemiBold
         }
 
         NetworkCard {
             connection: Network.active
             isActive: true
-            showDisconnect: Network.active?.type === "wifi"
+            showDisconnect: Network.active && Network.active.type === "wifi"
         }
     }
 
     ContentCard {
-        visible: Network.connections.filter(c => c.type === "ethernet").length > 0
+        visible: (Network.connections || []).filter(c => c && c.type === "ethernet").length > 0
 
         StyledText {
             text: "Ethernet"
             font.pixelSize: Metrics.fontSize(18)
-            font.bold: true
+            font.weight: Font.DemiBold
         }
 
         Repeater {
-            model: Network.connections.filter(c => c.type === "ethernet" && !c.active)
+            model: (Network.connections || []).filter(c => c && c.type === "ethernet" && !c.active)
+
             delegate: NetworkCard {
                 connection: modelData
                 showConnect: true
@@ -114,25 +111,26 @@ ContentMenu {
         StyledText {
             text: "Available Wi-Fi Networks"
             font.pixelSize: Metrics.fontSize(18)
-            font.bold: true
+            font.weight: Font.DemiBold
         }
 
         Item {
-            visible: Network.connections.filter(c => c.type === "wifi").length === 0 && !Network.scanning
+            visible: (Network.connections || []).filter(c => c && c.type === "wifi").length === 0 && !Network.scanning
             width: parent.width
-            height: Metrics.spacing(40)
+            height: 40
 
             StyledText {
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
                 text: "No networks found"
                 font.pixelSize: Metrics.fontSize(14)
-                color: ColorUtils.transparentize(Appearance.m3colors.m3onSurface, 0.4)
+                color: Appearance.m3colors.m3onSurfaceVariant
             }
-
         }
 
         Repeater {
-            model: Network.connections.filter(c => c.type === "wifi" && !c.active)
+            model: (Network.connections || []).filter(c => c && c.type === "wifi" && !c.active)
+
             delegate: NetworkCard {
                 connection: modelData
                 showConnect: true
@@ -141,27 +139,29 @@ ContentMenu {
     }
 
     ContentCard {
-        visible: Network.savedNetworks.length > 0
+        visible: (Network.savedNetworks || []).length > 0
+
         StyledText {
             text: "Remembered Networks"
             font.pixelSize: Metrics.fontSize(18)
-            font.bold: true
+            font.weight: Font.DemiBold
         }
 
         Item {
-            visible: Network.savedNetworks.length === 0
+            visible: (Network.savedNetworks || []).length === 0
             width: parent.width
-            height: Metrics.spacing(40)
+            height: 40
+
             StyledText {
-                anchors.left: parent.left
                 text: "No remembered networks"
                 font.pixelSize: Metrics.fontSize(14)
-                color: Appearance.colors.colSubtext
+                color: Appearance.m3colors.m3onSurfaceVariant
             }
         }
 
         Repeater {
-            model: Network.connections.filter(c => c.type === "wifi" && c.saved && !c.active)
+            model: (Network.connections || []).filter(c => c && c.type === "wifi" && c.saved && !c.active)
+
             delegate: NetworkCard {
                 connection: modelData
                 showConnect: false

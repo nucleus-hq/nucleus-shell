@@ -3,10 +3,12 @@ import QtQuick.Layouts
 import qs.modules.components 
 import qs.config
 import qs.modules.functions
+import qs.services
 import Quickshell.Bluetooth as QsBluetooth
 
 ContentRowCard {
-    id: deviceRow
+    id: root
+
     property var device
     property string statusText: ""
     property bool usePrimary: false
@@ -15,15 +17,19 @@ ContentRowCard {
     property bool showPair: false
     property bool showRemove: false
 
-    cardMargin: Metrics.margin(0)
-    cardSpacing: Metrics.spacing(10)
-    verticalPadding: Metrics.padding(0)
-    opacity: device.state === QsBluetooth.BluetoothDeviceState.Connecting ||
-             device.state === QsBluetooth.BluetoothDeviceState.Disconnecting ? 0.6 : 1
+    readonly property var d: (device && typeof device === "object") ? device : null
 
-    function mapBluetoothIcon(dbusIcon, name) {
-        console.log(dbusIcon, " / ", name)
-        const iconMap = {
+    cardMargin: 0
+    cardSpacing: 12
+
+    opacity: (d && (
+        d.state === QsBluetooth.BluetoothDeviceState.Connecting ||
+        d.state === QsBluetooth.BluetoothDeviceState.Disconnecting
+    )) ? 0.6 : 1
+
+    function iconName(dev) {
+        if (!dev) return "bluetooth"
+        const map = {
             "audio-headset": "headset",
             "audio-headphones": "headphones",
             "input-keyboard": "keyboard",
@@ -32,59 +38,66 @@ ContentRowCard {
             "phone": "phone_android",
             "computer": "computer",
             "printer": "print",
-            "camera": "photo_camera",
-            "unknown": "bluetooth"
+            "camera": "photo_camera"
         }
-        return iconMap[dbusIcon] || "bluetooth"
+        return map[dev.icon] || "bluetooth"
     }
 
     MaterialSymbol {
-        icon: mapBluetoothIcon(device.icon, device.name)
-        font.pixelSize: Metrics.fontSize(32)
+        icon: root.d ? iconName(root.d) : "bluetooth"
+        font.pixelSize: 28
+        color: root.usePrimary
+               ? Appearance.m3colors.m3primary
+               : Appearance.m3colors.m3onSurfaceVariant
     }
 
     ColumnLayout {
         Layout.alignment: Qt.AlignVCenter
-        spacing: Metrics.spacing(0)
+        spacing: 2
 
         StyledText {
-            text: device.name || device.address
-            font.pixelSize: Metrics.fontSize(16)
-            font.bold: true
+            text: root.d ? (root.d.name || root.d.address || "Unknown Device") : ""
+            font.pixelSize: Metrics.fontSize(15)
+            font.weight: Font.Medium
+            elide: Text.ElideRight
         }
 
         StyledText {
-            text: statusText
+            text: root.statusText
             font.pixelSize: Metrics.fontSize(12)
-            color: usePrimary
-                ? Appearance.m3colors.m3primary
-                : ColorUtils.transparentize(Appearance.m3colors.m3onSurface, 0.6)
+            color: root.usePrimary
+                   ? Appearance.m3colors.m3primary
+                   : Appearance.m3colors.m3onSurfaceVariant
         }
     }
 
     Item { Layout.fillWidth: true }
 
-    StyledButton {
-        visible: showConnect
-        icon: "link"
-        onClicked: device.connect()
-    }
+    RowLayout {
+        spacing: 6
 
-    StyledButton {
-        visible: showDisconnect
-        icon: "link_off"
-        onClicked: device.disconnect()
-    }
+        StyledButton {
+            visible: root.showConnect && root.d
+            icon: "link"
+            onClicked: if (root.d) root.d.connect()
+        }
 
-    StyledButton {
-        visible: showPair
-        icon: "add"
-        onClicked: device.pair()
-    }
+        StyledButton {
+            visible: root.showDisconnect && root.d
+            icon: "link_off"
+            onClicked: if (root.d) root.d.disconnect()
+        }
 
-    StyledButton {
-        visible: showRemove
-        icon: "delete"
-        onClicked: Bluetooth.removeDevice(device)
+        StyledButton {
+            visible: root.showPair && root.d
+            icon: "add"
+            onClicked: if (root.d) root.d.pair()
+        }
+
+        StyledButton {
+            visible: root.showRemove && root.d
+            icon: "delete"
+            onClicked: if (root.d) Bluetooth.removeDevice(root.d)
+        }
     }
 }

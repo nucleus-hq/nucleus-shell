@@ -2,54 +2,62 @@ import qs.config
 import QtQuick
 import QtQuick.Layouts
 
-ContentRowCard {
-    id: infoCard
+Item {
+    id: root
 
-    // --- Properties ---
     property string icon: "info"
-    property color backgroundColor: Appearance.m3colors.darkMode ? Qt.lighter(Appearance.m3colors.m3error, 3.5) : Qt.lighter(Appearance.m3colors.m3error, 1)
-    property color contentColor: Appearance.m3colors.m3onPrimary
     property string title: "Title"
     property string description: "Description"
 
-    color: backgroundColor
-    cardSpacing: Metrics.spacing(12)   // nice spacing between elements
+    property color containerColor: Appearance.m3colors.m3errorContainer
+    property color contentColor: Appearance.m3colors.m3onErrorContainer
+
+    implicitWidth: parent ? parent.width : 400
+    implicitHeight: contentRow.implicitHeight + Metrics.margin(16) * 2
+
+    Rectangle {
+        anchors.fill: parent
+        radius: Metrics.radius("normal")
+        color: root.containerColor
+    }
 
     RowLayout {
-        id: mainLayout
-        Layout.fillHeight: true 
-        Layout.fillWidth: true
-        
+        id: contentRow
+        anchors.fill: parent
+        anchors.margins: Metrics.margin(16)
         spacing: Metrics.spacing(16)
-        Layout.alignment: Qt.AlignVCenter
 
-        // --- Icon ---
-        MaterialSymbol {
-            id: infoIcon
-            icon: infoCard.icon
-            iconSize: Metrics.iconSize(26)
-            color: contentColor
-            Layout.alignment: Qt.AlignVCenter
+        Rectangle {
+            width: 36
+            height: 36
+            radius: Metrics.radius(1000)
+            color: Qt.alpha(root.contentColor, 0.12)
+
+            MaterialSymbol {
+                anchors.centerIn: parent
+                icon: root.icon
+                iconSize: Metrics.iconSize(22)
+                color: root.contentColor
+            }
         }
 
-        // --- Text column ---
         ColumnLayout {
-            spacing: Metrics.spacing(2)
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
+            spacing: 2
 
             StyledText {
-                text: infoCard.title
-                font.bold: true
-                color: contentColor
+                text: root.title
                 font.pixelSize: Metrics.fontSize(14)
+                font.weight: Font.Medium
+                color: root.contentColor
                 Layout.fillWidth: true
+                elide: Text.ElideRight
             }
 
             StyledText {
-                text: infoCard.description
-                color: contentColor
+                text: root.description
                 font.pixelSize: Metrics.fontSize(12)
+                color: Qt.alpha(root.contentColor, 0.8)
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
