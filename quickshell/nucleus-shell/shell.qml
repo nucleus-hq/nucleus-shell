@@ -17,6 +17,7 @@ import qs.modules.interface.sidebarLeft
 import qs.modules.interface.lockscreen
 import qs.modules.interface.screencapture
 import qs.modules.interface.polkit
+import qs.modules.interface.dock
 
 ShellRoot {
     id: shellroot 
@@ -75,6 +76,12 @@ ShellRoot {
         id: lockScreenLoader
         source: Contracts.lockScreen
         active: true && !Contracts.overriddenLockScreen
+    }
+
+    LazyLoader {
+        id: dockLoader
+        source: Contracts.dock
+        active: (Config.dock?.enabled ?? true) && !Contracts.overriddenDock
     }
 
     Settings { }

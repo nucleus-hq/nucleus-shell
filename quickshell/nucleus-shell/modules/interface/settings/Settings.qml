@@ -55,15 +55,16 @@ Scope {
 
                 { "header": true, "label": "Customization" },
                 { "icon": "toolbar", "label": "Bar", "page": 4 },
-                { "icon": "wallpaper", "label": "Wallpapers", "page": 5 },
-                { "icon": "apps", "label": "Launcher", "page": 6 },
-                { "icon": "notifications", "label": "Notifications", "page": 7 },
-                { "icon": "extension", "label": "Plugins", "page": 8 },
-                { "icon": "store", "label": "Store", "page": 9 },
-                { "icon": "build", "label": "Miscellaneous", "page": 10 },
+                { "icon": "dock_to_bottom", "label": "Dock", "page": 5 },
+                { "icon": "wallpaper", "label": "Wallpapers", "page": 6 },
+                { "icon": "apps", "label": "Launcher", "page": 7 },
+                { "icon": "notifications", "label": "Notifications", "page": 8 },
+                { "icon": "extension", "label": "Plugins", "page": 9 },
+                { "icon": "store", "label": "Store", "page": 10 },
+                { "icon": "build", "label": "Miscellaneous", "page": 11 },
 
                 { "header": true, "label": "About" },
-                { "icon": "info", "label": "About", "page": 11 }
+                { "icon": "info", "label": "About", "page": 12 }
             ]
 
             Item {
@@ -203,6 +204,7 @@ Scope {
                     AudioConfig        { Layout.fillWidth: true; Layout.fillHeight: true }
                     AppearanceConfig   { Layout.fillWidth: true; Layout.fillHeight: true }
                     BarConfig          { Layout.fillWidth: true; Layout.fillHeight: true }
+                    DockConfig         { Layout.fillWidth: true; Layout.fillHeight: true }
                     WallpaperConfig    { Layout.fillWidth: true; Layout.fillHeight: true }
                     LauncherConfig     { Layout.fillWidth: true; Layout.fillHeight: true }
                     NotificationConfig { Layout.fillWidth: true; Layout.fillHeight: true }

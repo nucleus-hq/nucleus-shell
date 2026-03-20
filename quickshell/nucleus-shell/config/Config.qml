@@ -162,6 +162,7 @@ Singleton {
             
             property var plugins: ({}) // dynamic plugins config variable
             property var monitors: ({}) // per-monitor configuration for bars and wallpapers
+            property var dockPinnedApps: [] // persisted list of pinned app IDs for the dock
 
             property JsonObject appearance: JsonObject {
                 property string theme: "dark"
@@ -247,6 +248,22 @@ Singleton {
                 property bool fuzzySearchEnabled: true
                 property string webSearchEngine: "google"
             }
+            property JsonObject dock: JsonObject {
+                property bool enabled: true
+                property string position: "bottom"
+                property string theme: "default"
+                property bool pinnedOnStartup: true
+                property bool keepHidden: false
+                property bool hoverToReveal: false
+                property bool availableOnFullscreen: false
+                property int height: 44
+                property int iconSize: 32
+                property int spacing: 6
+                property int margin: 6
+                property int hoverRegionHeight: 4
+                property bool showOverviewButton: false
+            }
+
             property JsonObject bar: JsonObject {
                 property string position: "top"
                 property bool enabled: true

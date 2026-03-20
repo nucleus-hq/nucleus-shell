@@ -29,8 +29,23 @@ Singleton {
         if (icon.startsWith("/"))
             return "file://" + icon
 
-        // Otherwise treat as theme icon name
-        return Quickshell.iconPath(icon)
+        // Try exact theme icon name first
+        const exact = Quickshell.iconPath(icon, true)
+        if (exact) return exact
+
+        // Symbolic fallback for themes like Adwaita that only ship -symbolic variants
+        const symbolic = Quickshell.iconPath(icon + "-symbolic", true)
+        if (symbolic) return symbolic
+
+        // Pixmaps fallback for apps that ship their icon outside the theme
+        const exts = ["png", "svg", "xpm"]
+        for (const ext of exts) {
+            const path = "/usr/share/pixmaps/" + icon + "." + ext
+            if (FileUtils.fileExists(path))
+                return "file://" + path
+        }
+
+        return ""
     }
 
     // Try very aggressive matching so the running app always gets the same icon as launcher
@@ -146,6 +161,13 @@ Singleton {
 
     function buildRegistry() {
         const entries = DesktopEntries.applications.values
+        if (entries.length === 0) return
+
+        // Reset maps before rebuilding
+        registry.classToIcon = {}
+        registry.desktopIdToIcon = {}
+        registry.nameToIcon = {}
+        registry.apps = []
 
         for (let entry of entries) {
             if (entry.noDisplay)
@@ -162,6 +184,11 @@ Singleton {
         }
 
         registry.ready()
+    }
+
+    Connections {
+        target: DesktopEntries
+        function onApplicationsChanged() { buildRegistry() }
     }
 
     Component.onCompleted: buildRegistry()

@@ -24,12 +24,26 @@ Singleton {
         if (Quickshell.iconPath(dashed, true).length > 0)
             return dashed;
 
-        // 4. Extension guess
+        // 4. Symbolic fallback (for themes like Adwaita that only ship -symbolic variants)
+        if (Quickshell.iconPath(normalized + "-symbolic", true).length > 0)
+            return normalized + "-symbolic";
+
+        if (Quickshell.iconPath(dashed + "-symbolic", true).length > 0)
+            return dashed + "-symbolic";
+
+        // 5. Extension guess
         const ext = original.split(".").pop().toLowerCase();
         if (Quickshell.iconPath(ext, true).length > 0)
             return ext;
 
         return "";
+    }
+
+    function fileExists(path) {
+        const req = new XMLHttpRequest()
+        req.open("HEAD", "file://" + path, false)
+        req.send()
+        return req.status === 200
     }
 
     function trimFileProtocol(str) {

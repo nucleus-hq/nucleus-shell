@@ -66,4 +66,11 @@ QtObject {
     function overrideSidebarLeft() {
         overriddenSidebarLeft = true
     }
+
+    // Dock
+    property url dock: Qt.resolvedUrl("../modules/interface/dock/Dock.qml")
+    property bool overriddenDock: false
+    function overrideDock() {
+        overriddenDock = true
+    }
 }

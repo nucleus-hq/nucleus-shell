@@ -200,7 +200,11 @@ Item {
                             rotation: (ConfigResolver.bar(displayName).position === "left" || ConfigResolver.bar(displayName).position === "right") ? 270 : 0
                             source: {
                                 const win = Compositor.focusedWindowForWorkspace(wsIndex);
-                                return win ? AppRegistry.iconForClass(win.class) : "";
+                                if (!win) return "";
+                                const entry = DesktopEntries.heuristicLookup(win.class);
+                                if (entry && entry.icon)
+                                    return AppRegistry.iconForDesktopIcon(entry.icon);
+                                return AppRegistry.iconForClass(win.class);
                             }
                             layer.enabled: true
                             layer.effect: MultiEffect {
