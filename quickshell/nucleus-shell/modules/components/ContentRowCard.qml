@@ -3,49 +3,45 @@ import QtQuick
 import QtQuick.Layouts
 
 Item {
-    id: baseCard
+    id: root
     
     Layout.fillWidth: true
-    
-    implicitHeight: wpBG.implicitHeight
+    implicitHeight: container.implicitHeight
 
     default property alias content: contentArea.data
-    property alias color: wpBG.color
+    property alias radius: container.radius
 
     property int cardMargin: Metrics.margin(20)
     property int cardSpacing: Metrics.spacing(10)
-    property int radius: Metrics.radius("large")
-    property int verticalPadding: Metrics.padding(40)
+    property int padding: Metrics.padding(20)
 
     Rectangle {
-        id: wpBG
-        anchors.left: parent.left
-        anchors.right: parent.right
-        implicitHeight: contentArea.implicitHeight + baseCard.verticalPadding
-        Behavior on implicitHeight {
-            enabled: Config.runtime.appearance.animations.enabled
-            NumberAnimation {
-                duration: Metrics.chronoDuration("small")
-                easing.type: Easing.InOutExpo
-            }
-        }
-        color: Appearance.m3colors.m3surfaceContainerLow
+        id: container
+        anchors.fill: parent
+
+        radius: Metrics.radius("large")
+
+        // 🔥 CRITICAL FIX: use solid color (no alpha stacking issues)
+        color: Appearance.m3colors.m3surface
+
+        border.width: 1
+        border.color: Appearance.m3colors.m3outlineVariant
+
+        implicitHeight: contentArea.implicitHeight + root.padding * 2
+
         Behavior on color {
             enabled: Config.runtime.appearance.animations.enabled
             ColorAnimation {
-                duration: Metrics.chronoDuration("small")
-                easing.type: Easing.InOutExpo
+                duration: Metrics.chronoDuration("fast")
+                easing.type: Easing.OutCubic
             }
         }
-        radius: baseCard.radius
     }
 
     RowLayout {
         id: contentArea
-        anchors.top: wpBG.top
-        anchors.left: wpBG.left
-        anchors.right: wpBG.right
-        anchors.margins: baseCard.cardMargin
-        spacing: baseCard.cardSpacing
+        anchors.fill: parent
+        anchors.margins: root.padding
+        spacing: root.cardSpacing
     }
 }

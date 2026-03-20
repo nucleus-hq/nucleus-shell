@@ -7,85 +7,88 @@ import qs.services
 import Quickshell.Bluetooth as QsBluetooth
 
 ContentMenu {
+    id: root
+
     title: "Bluetooth"
     description: "Manage Bluetooth devices and connections."
 
+    readonly property var adapter: Bluetooth.defaultAdapter
+
     ContentCard {
         ContentRowCard {
-            cardSpacing: Metrics.spacing(0)
-            verticalPadding: Bluetooth.defaultAdapter.enabled ? Metrics.padding(10) : Metrics.padding(0)
-            cardMargin: Metrics.margin(0)
+            cardSpacing: 0
+            cardMargin: 0
 
             StyledText {
                 text: powerSwitch.checked ? "Power: On" : "Power: Off"
                 font.pixelSize: Metrics.fontSize(16)
-                font.bold: true
+                font.weight: Font.Medium
             }
 
             Item { Layout.fillWidth: true }
 
             StyledSwitch {
                 id: powerSwitch
-                checked: Bluetooth.defaultAdapter?.enabled
-                onToggled: Bluetooth.defaultAdapter.enabled = checked
+                checked: root.adapter ? root.adapter.enabled : false
+                onToggled: if (root.adapter) root.adapter.enabled = checked
             }
         }
 
         ContentRowCard {
-            visible: Bluetooth.defaultAdapter.enabled
-            cardSpacing: Metrics.spacing(0)
-            verticalPadding: Metrics.padding(10)
-            cardMargin: Metrics.margin(0)
+            visible: root.adapter && root.adapter.enabled
+            cardSpacing: 0
+            cardMargin: 0
 
             ColumnLayout {
-                spacing: Metrics.spacing(2)
+                spacing: 2
 
                 StyledText {
                     text: "Discoverable"
-                    font.pixelSize: Metrics.fontSize(16)
+                    font.pixelSize: Metrics.fontSize(15)
+                    font.weight: Font.Medium
                 }
 
                 StyledText {
-                    text: "Allow other devices to find this computer."
+                    text: "Allow other devices to find this computer"
                     font.pixelSize: Metrics.fontSize(12)
-                    color: ColorUtils.transparentize(Appearance.m3colors.m3onSurface, 0.6)
+                    color: Appearance.m3colors.m3onSurfaceVariant
                 }
             }
 
             Item { Layout.fillWidth: true }
 
             StyledSwitch {
-                checked: Bluetooth.defaultAdapter?.discoverable
-                onToggled: Bluetooth.defaultAdapter.discoverable = checked
+                checked: root.adapter ? root.adapter.discoverable : false
+                onToggled: if (root.adapter) root.adapter.discoverable = checked
             }
         }
 
         ContentRowCard {
-            visible: Bluetooth.defaultAdapter.enabled
-            cardSpacing: Metrics.spacing(0)
-            verticalPadding: Metrics.padding(0)
-            cardMargin: Metrics.margin(0)
+            visible: root.adapter && root.adapter.enabled
+            cardSpacing: 0
+            cardMargin: 0
 
             ColumnLayout {
-                spacing: Metrics.spacing(2)
+                spacing: 2
 
                 StyledText {
                     text: "Scanning"
-                    font.pixelSize: Metrics.fontSize(16)
+                    font.pixelSize: Metrics.fontSize(15)
+                    font.weight: Font.Medium
                 }
 
                 StyledText {
-                    text: "Search for nearby Bluetooth devices."
+                    text: "Search for nearby Bluetooth devices"
                     font.pixelSize: Metrics.fontSize(12)
-                    color: ColorUtils.transparentize(Appearance.m3colors.m3onSurface, 0.6)
+                    color: Appearance.m3colors.m3onSurfaceVariant
                 }
             }
 
             Item { Layout.fillWidth: true }
 
             StyledSwitch {
-                checked: Bluetooth.defaultAdapter?.discovering
-                onToggled: Bluetooth.defaultAdapter.discovering = checked
+                checked: root.adapter ? root.adapter.discovering : false
+                onToggled: if (root.adapter) root.adapter.discovering = checked
             }
         }
     }
@@ -96,17 +99,17 @@ ContentMenu {
         StyledText {
             text: "Connected Devices"
             font.pixelSize: Metrics.fontSize(18)
-            font.bold: true
+            font.weight: Font.DemiBold
         }
 
         Repeater {
             id: connectedDevices
-            model: Bluetooth.devices.filter(d => d.connected)
+            model: (Bluetooth.devices || []).filter(d => d && d.connected)
 
             delegate: BluetoothDeviceCard {
                 device: modelData
-                statusText: modelData.batteryAvailable
-                    ? "Connected, " + Math.floor(modelData.battery * 100) + "% left"
+                statusText: modelData && modelData.batteryAvailable
+                    ? "Connected • " + Math.floor(modelData.battery * 100) + "%"
                     : "Connected"
                 showDisconnect: true
                 showRemove: true
@@ -116,30 +119,29 @@ ContentMenu {
     }
 
     ContentCard {
-        visible: Bluetooth.defaultAdapter?.enabled
+        visible: root.adapter && root.adapter.enabled
 
         StyledText {
             text: "Paired Devices"
             font.pixelSize: Metrics.fontSize(18)
-            font.bold: true
+            font.weight: Font.DemiBold
         }
 
         Item {
             visible: pairedDevices.count === 0
             width: parent.width
-            height: Metrics.spacing(40)
+            height: 40
 
             StyledText {
-                anchors.left: parent.left
                 text: "No paired devices"
                 font.pixelSize: Metrics.fontSize(14)
-                color: ColorUtils.transparentize(Appearance.m3colors.m3onSurface, 0.6)
+                color: Appearance.m3colors.m3onSurfaceVariant
             }
         }
 
         Repeater {
             id: pairedDevices
-            model: Bluetooth.devices.filter(d => !d.connected && d.paired)
+            model: (Bluetooth.devices || []).filter(d => d && !d.connected && d.paired)
 
             delegate: BluetoothDeviceCard {
                 device: modelData
@@ -151,30 +153,30 @@ ContentMenu {
     }
 
     ContentCard {
-        visible: Bluetooth.defaultAdapter?.enabled
+        visible: root.adapter && root.adapter.enabled
 
         StyledText {
             text: "Available Devices"
             font.pixelSize: Metrics.fontSize(18)
-            font.bold: true
+            font.weight: Font.DemiBold
         }
 
         Item {
-            visible: discoveredDevices.count === 0 && !Bluetooth.defaultAdapter.discovering
+            visible: discoveredDevices.count === 0 && !(root.adapter && root.adapter.discovering)
             width: parent.width
-            height: Metrics.spacing(40)
+            height: 40
 
             StyledText {
-                Layout.alignment: Qt.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
                 text: "No new devices found"
                 font.pixelSize: Metrics.fontSize(14)
-                color: ColorUtils.transparentize(Appearance.m3colors.m3onSurface, 0.6)
+                color: Appearance.m3colors.m3onSurfaceVariant
             }
         }
 
         Repeater {
             id: discoveredDevices
-            model: Bluetooth.devices.filter(d => !d.paired && !d.connected)
+            model: (Bluetooth.devices || []).filter(d => d && !d.paired && !d.connected)
 
             delegate: BluetoothDeviceCard {
                 device: modelData
