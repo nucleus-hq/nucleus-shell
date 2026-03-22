@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/github/repo-size/xZepyx/nucleus-shell?color=c4b5fd&label=SIZE&logo=protondrive&style=for-the-badge&logoColor=EDE9FE&labelColor=1E1B2E" alt="Repo Size" />
   &nbsp;
   <img src="https://img.shields.io/badge/Maintenance-Active-8b5cf6?style=for-the-badge&logo=vercel&logoColor=EDE9FE&labelColor=1E1B2E" alt="Maintenance" />
-  <img src="https://img.shields.io/badge/dynamic/json?url=https://api.counterapi.dev/v1/xzepyx/nucleus-shell/up&query=$.count&label=Installs&style=for-the-badge&color=a78bfa&logo=download&logoColor=EDE9FE&labelColor=1E1B2E" alt="Installs" />
+  <img src="https://img.shields.io/badge/dynamic/json?url=https://api.counterapi.dev/v1/xzepyx/nucleus-shell/&query=$.count&label=Installs&style=for-the-badge&color=a78bfa&logo=download&logoColor=EDE9FE&labelColor=1E1B2E" alt="Installs" />
 </p>
 
 </div>
