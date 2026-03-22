@@ -15,13 +15,19 @@ cat <<'EOF'
 | |\  | |_| | (__| |  __/ |_| \__ \    ___) | | | |  __/ | |
 |_| \_|\__,_|\___|_|\___|\__,_|___/   |____/|_| |_|\___|_|_|
 EOF
-
 echo -e "${RESET}"
 
-bash "$ROOT_DIR/pkg.sh"
+# Run installation steps
+if bash "$ROOT_DIR/pkg.sh" && \
+   mkdir -p ~/.config/quickshell/nucleus-shell && \
+   cp -r "$ROOT_DIR/../quickshell/nucleus-shell/"* ~/.config/quickshell/nucleus-shell
+then
+    echo "Finished!"
+    echo "Check ~/.config/quickshell/nucleus-shell/* exists to confirm installation."
 
-mkdir -p ~/.config/quickshell/nucleus-shell
-cp -r ../quickshell/nucleus-shell/* ~/.config/quickshell/nucleus-shell
-
-echo "Finished!"
-echo "Check ~/.config/quickshell/nucleus-shell/* exists to confirm installation."
+    # Increment counter ONLY on success
+    curl -fsS https://api.counterapi.dev/v1/xzepyx/nucleus-shell/up >/dev/null 2>&1 || true
+else
+    echo "Installation failed. Skipping counter update."
+    exit 1
+fi
