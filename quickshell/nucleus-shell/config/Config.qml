@@ -233,7 +233,7 @@ Singleton {
                 property string position: "center"
             }
             property JsonObject shell: JsonObject {
-                property string version: "0.7.7"
+                property string version: "0.8.0"
                 property string releaseChannel: "stable"
                 property string qsVersion: "0.0.0"
             }
