@@ -46,7 +46,16 @@ Scope {
                 right: targetMarginRight
             }
 
-            exclusiveZone: (dockContent.pinned && !dockContent.activeWindowFullscreen) && targetMarginLeft === 0 && targetMarginRight === 0 ? dockContent.dockSize + dockContent.dockMargin : 0
+            exclusiveZone: {
+                // Never reserve space when sidebars are animating/open
+                if (targetMarginLeft !== 0 || targetMarginRight !== 0) return 0
+                // Never reserve space when fullscreen
+                if (dockContent.activeWindowFullscreen) return 0
+                // In hover-to-reveal or keep-hidden modes the dock overlays content — no space reserved
+                if (dockContent.keepHidden || (Config.runtime.dock?.hoverToReveal ?? false)) return 0
+                // Reserve space only when dock is permanently visible
+                return dockContent.pinned ? dockContent.dockSize + dockContent.dockMargin : 0
+            }
 
             implicitWidth: dockContent.implicitWidth
             implicitHeight: dockContent.implicitHeight
