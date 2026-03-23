@@ -117,6 +117,8 @@ PanelWindow {
             ? sidebarRight.sidebarRightWidth
             : 0
 
+        Behavior on width { Anim {} }
+
         visible: floatingLayout
         clip: true
 

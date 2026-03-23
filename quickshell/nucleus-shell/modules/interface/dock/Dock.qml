@@ -29,11 +29,24 @@ Scope {
             anchors {
                 top: dockContent.isTop
                 bottom: dockContent.isBottom
-                left: dockContent.isLeft
-                right: dockContent.isRight
+                // Horizontal docks span full screen width so margins can shift the dock
+                left: dockContent.isLeft || !dockContent.isVertical
+                right: dockContent.isRight || !dockContent.isVertical
             }
 
-            exclusiveZone: (dockContent.pinned && !dockContent.activeWindowFullscreen) ? dockContent.dockSize + dockContent.dockMargin : 0
+            // Animated margins so the dock slides away from open sidebars
+            property int targetMarginLeft: dockContent.sidebarMarginLeft
+            property int targetMarginRight: dockContent.sidebarMarginRight
+
+            Behavior on targetMarginLeft  { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+            Behavior on targetMarginRight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+
+            WlrLayershell.margins {
+                left: targetMarginLeft
+                right: targetMarginRight
+            }
+
+            exclusiveZone: (dockContent.pinned && !dockContent.activeWindowFullscreen) && targetMarginLeft === 0 && targetMarginRight === 0 ? dockContent.dockSize + dockContent.dockMargin : 0
 
             implicitWidth: dockContent.implicitWidth
             implicitHeight: dockContent.implicitHeight
