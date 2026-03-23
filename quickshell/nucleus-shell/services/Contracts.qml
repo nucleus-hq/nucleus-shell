@@ -4,73 +4,37 @@ import Quickshell.Io
 import qs.config
 
 QtObject {
-    // Power menu
-    property url powerMenu: Qt.resolvedUrl("../modules/interface/powermenu/Powermenu.qml")
-    property bool overriddenPowerMenu: false
-    function overridePowerMenu() {
-        overriddenPowerMenu = true
+    id: root
+
+    function _slot(defaultPath) {
+        const resolved = Qt.resolvedUrl(defaultPath)
+        return Qt.createQmlObject(`
+            import QtQuick
+            QtObject {
+                property url  source:     "` + resolved + `"
+                property bool overridden: false
+                property bool disabled:   false
+
+                function override(newSource) {
+                    source     = newSource
+                    overridden = true
+                }
+                function disable() {
+                    disabled = true
+                }
+                property bool active: !disabled
+            }
+        `, root, "slot_" + defaultPath)
     }
 
-    // Bar
-    property url bar: Qt.resolvedUrl("../modules/interface/bar/Bar.qml")
-    property bool overriddenBar: false
-    function overrideBar() {
-        overriddenBar = true
-    }
-
-    // App launcher
-    property url launcher: Qt.resolvedUrl("../modules/interface/launcher/Launcher.qml")
-    property bool overriddenLauncher: false
-    function overrideLauncher() {
-        overriddenLauncher = true
-    }
-
-    // Lock screen
-    property url lockScreen: Qt.resolvedUrl("../modules/interface/lockscreen/LockScreen.qml")
-    property bool overriddenLockScreen: false
-    function overrideLockScreen() {
-        overriddenLockScreen = true
-    }
-
-    // Desktop background / wallpaper handler
-    property url background: Qt.resolvedUrl("../modules/interface/background/Background.qml")
-    property bool overriddenBackground: false
-    function overrideBackground() {
-        overriddenBackground = true
-    }
-
-    // Notifications UI
-    property url notifications: Qt.resolvedUrl("../modules/interface/notifications/Notifications.qml")
-    property bool overriddenNotifications: false
-    function overrideNotifications() {
-        overriddenNotifications = true
-    }
-
-    // Global overlays (OSD, volume, brightness, etc.)
-    property url overlays: Qt.resolvedUrl("../modules/interface/overlays/Overlays.qml")
-    property bool overriddenOverlays: false
-    function overrideOverlays() {
-        overriddenOverlays = true
-    }
-
-    // Right sidebar
-    property url sidebarRight: !overriddenSidebarRight ? Qt.resolvedUrl("../modules/interface/sidebarRight/SidebarRight.qml") : "" // Force override
-    property bool overriddenSidebarRight: false
-    function overrideSidebarRight() {
-        overriddenSidebarRight = true
-    }
-
-    // Left sidebar
-    property url sidebarLeft: !overriddenSidebarLeft ? Qt.resolvedUrl("../modules/interface/sidebarLeft/SidebarLeft.qml") : "" // Force override
-    property bool overriddenSidebarLeft: false
-    function overrideSidebarLeft() {
-        overriddenSidebarLeft = true
-    }
-
-    // Dock
-    property url dock: Qt.resolvedUrl("../modules/interface/dock/Dock.qml")
-    property bool overriddenDock: false
-    function overrideDock() {
-        overriddenDock = true
-    }
+    readonly property var powerMenu:     _slot("../modules/interface/powermenu/Powermenu.qml")
+    readonly property var bar:           _slot("../modules/interface/bar/Bar.qml")
+    readonly property var launcher:      _slot("../modules/interface/launcher/Launcher.qml")
+    readonly property var lockScreen:    _slot("../modules/interface/lockscreen/LockScreen.qml")
+    readonly property var background:    _slot("../modules/interface/background/Background.qml")
+    readonly property var notifications: _slot("../modules/interface/notifications/Notifications.qml")
+    readonly property var overlays:      _slot("../modules/interface/overlays/Overlays.qml")
+    readonly property var sidebarRight:  _slot("../modules/interface/sidebarRight/SidebarRight.qml")
+    readonly property var sidebarLeft:   _slot("../modules/interface/sidebarLeft/SidebarLeft.qml")
+    readonly property var dock:          _slot("../modules/interface/dock/Dock.qml")
 }
