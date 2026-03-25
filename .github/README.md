@@ -3,13 +3,14 @@
 
 # ✦ nucleus-shell ✦
 
-<p>
-  <img src="https://img.shields.io/github/last-commit/xzepyx/nucleus-shell?style=for-the-badge&color=a78bfa&logo=git&logoColor=EDE9FE&labelColor=1E1B2E" alt="Last Commit" />
-  <img src="https://img.shields.io/github/stars/xZepyx/nucleus-shell?style=for-the-badge&logo=andela&color=c4b5fd&logoColor=EDE9FE&labelColor=1E1B2E" alt="Stars" />
-  <img src="https://img.shields.io/github/repo-size/xZepyx/nucleus-shell?color=c4b5fd&label=SIZE&logo=protondrive&style=for-the-badge&logoColor=EDE9FE&labelColor=1E1B2E" alt="Repo Size" />
-  &nbsp;
-  <img src="https://img.shields.io/badge/Maintenance-Active-8b5cf6?style=for-the-badge&logo=vercel&logoColor=EDE9FE&labelColor=1E1B2E" alt="Maintenance" />
-  <img src="https://img.shields.io/badge/dynamic/json?url=https://api.counterapi.dev/v1/xzepyx/nucleus-shell/&query=$.count&label=Installs&style=for-the-badge&color=a78bfa&logo=download&logoColor=EDE9FE&labelColor=1E1B2E" alt="Installs" />
+<p align="center">
+  <img src="https://img.shields.io/github/last-commit/xzepyx/nucleus-shell?style=for-the-badge&color=8b5cf6&logo=git&logoColor=EDE9FE&labelColor=1E1B2E" />
+  &nbsp;&nbsp;
+  <img src="https://img.shields.io/github/stars/xZepyx/nucleus-shell?style=for-the-badge&logo=andela&color=8b5cf6&logoColor=EDE9FE&labelColor=1E1B2E" />
+  &nbsp;&nbsp;
+  <img src="https://img.shields.io/github/repo-size/xZepyx/nucleus-shell?style=for-the-badge&color=8b5cf6&logo=protondrive&logoColor=EDE9FE&labelColor=1E1B2E" />
+  &nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/Maintenance-Active-8b5cf6?style=for-the-badge&logo=vercel&logoColor=EDE9FE&labelColor=1E1B2E" />
 </p>
 
 </div>
@@ -205,8 +206,8 @@ Contributions are welcome. When contributing:
 
 <h2 align="center">✦ Collaborators ✦</h2>
 
-* [@Tanujairamv](https://github.com/Tanujairmv): Material UI "Expert"
-* [@Saturno](https://github.com/Saturno-0): Code Wizard
+* [@Tanujairamv](https://github.com/Tanujairmv): Material UI Developer
+* [@Saturno](https://github.com/Saturno-0): Logical Developer
 
 ---
 
