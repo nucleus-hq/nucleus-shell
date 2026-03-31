@@ -31,6 +31,28 @@ Scope {
         }
     }
 
+    IpcHandler {
+        target: "sidebarRight"
+        function toggle() {
+            togglesidebarRight()
+        }
+    }
+
+    IpcHandler {
+        function toggle() {
+            Globals.visiblility.launcher = !Globals.visiblility.launcher;
+        }
+
+        target: "launcher"
+    }
+
+    IpcHandler {
+        target: "sidebarLeft"
+        function toggle() {
+            togglesidebarLeft()
+        }
+    }
+
     // Handle Global IPCs
     IpcHandler {
         target: "global"

@@ -193,10 +193,4 @@ PanelWindow {
         Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight
     }
 
-    IpcHandler {
-        target: "sidebarRight"
-        function toggle() {
-            togglesidebarRight()
-        }
-    }
 }

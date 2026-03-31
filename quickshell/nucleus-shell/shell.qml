@@ -36,12 +36,12 @@ ShellRoot {
     LazyLoader {
         id: powerMenuLoader
         source: Contracts.powerMenu.source
-        active: Contracts.powerMenu.active && Globals.visibility.powermenu
+        active: Contracts.powerMenu.active && Globals.visiblility.powermenu
     }
     LazyLoader {
         id: launcherLoader
         source: Contracts.launcher.source
-        active: Contracts.launcher.active
+        active: Contracts.launcher.active && Globals.visiblility.launcher
     }
     LazyLoader {
         id: notificationsLoader
@@ -56,12 +56,12 @@ ShellRoot {
     LazyLoader {
         id: sidebarRightLoader
         source: Contracts.sidebarRight.source
-        active: Contracts.sidebarRight.active
+        active: Contracts.sidebarRight.active && Globals.visiblility.sidebarRight
     }
     LazyLoader {
         id: sidebarLeftLoader
         source: Contracts.sidebarLeft.source
-        active: Contracts.sidebarLeft.active
+        active: Contracts.sidebarLeft.active && Globals.visiblility.sidebarLeft
     }
     LazyLoader {
         id: lockScreenLoader
@@ -75,11 +75,11 @@ ShellRoot {
     }
 
     // Services
-    Settings      { }
-    Ipc           { }
-    Intelligence  { }
-    UpdateNotifier{ }
-    PluginHost    { }
-    ScreenCapture { }
-    PolkitAgent   { }
+    Settings       { }
+    Ipc            { }
+    Intelligence   { }
+    UpdateNotifier { }
+    PluginHost     { }
+    ScreenCapture  { }
+    PolkitAgent    { }
 }

@@ -34,7 +34,7 @@ PanelWindow {
     visible: Config.initialized
     color: "transparent"
     exclusiveZone: 0
-    WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarLeft
+    WlrLayershell.keyboardFocus: Compositor.require("niri", "hyprland") && Globals.visiblility.sidebarLeft
 
     HyprlandFocusGrab {
         id: grab
@@ -189,13 +189,6 @@ PanelWindow {
 
                 SidebarLeftContent {}
             }
-        }
-    }
-
-    IpcHandler {
-        target: "sidebarLeft"
-        function toggle() {
-            togglesidebarLeft()
         }
     }
 }
