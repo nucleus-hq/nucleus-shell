@@ -13,6 +13,9 @@ Singleton {
         property bool launcher: false
         property bool sidebarRight: false
         property bool sidebarLeft: false
+        // Widths used by the dock to shift away from open sidebars
+        property int sidebarLeftWidth: 480
+        property int sidebarRightWidth: 500
     }
 
     states: QtObject {

@@ -83,6 +83,18 @@ Item {
 
     readonly property int hoverRegionHeight: Config.runtime.dock?.hoverRegionHeight ?? 4
 
+    // Margins exposed to Dock.qml so the PanelWindow shifts via WlrLayershell.margins
+    readonly property int sidebarMarginLeft: {
+        if (isRight) return 0
+        const sw = Globals.visiblility.sidebarLeft ? Globals.visiblility.sidebarLeftWidth : 0
+        return sw > 0 ? sw + shadowSpace : 0
+    }
+    readonly property int sidebarMarginRight: {
+        if (isLeft) return 0
+        const sw = Globals.visiblility.sidebarRight ? Globals.visiblility.sidebarRightWidth : 0
+        return sw > 0 ? sw + shadowSpace : 0
+    }
+
     implicitWidth:  isVertical ? dockSize + dockMargin + shadowSpace * 2 : dockInner.implicitWidth + shadowSpace * 2
     implicitHeight: isVertical ? dockInner.implicitHeight + shadowSpace * 2 : dockSize + dockMargin + shadowSpace * 2
 
@@ -105,7 +117,7 @@ Item {
         x: (root.isBottom || root.isTop) ? (parent.width - width) / 2 : (root.isLeft ? 0 : parent.width - width)
         y: root.isVertical ? (parent.height - height) / 2 : (root.isTop ? 0 : parent.height - height)
 
-        Behavior on x { enabled: Config.runtime.appearance.animations.enabled; NumberAnimation { duration: Metrics.chronoDuration(100); easing.type: Easing.OutCubic } }
+        Behavior on x { enabled: Config.runtime.appearance.animations.enabled; NumberAnimation { duration: Metrics.chronoDuration(250); easing.type: Easing.OutCubic } }
         Behavior on y { enabled: Config.runtime.appearance.animations.enabled; NumberAnimation { duration: Metrics.chronoDuration(100); easing.type: Easing.OutCubic } }
         Behavior on width  { enabled: Config.runtime.appearance.animations.enabled && root.isVertical;  NumberAnimation { duration: Metrics.chronoDuration(100); easing.type: Easing.OutCubic } }
         Behavior on height { enabled: Config.runtime.appearance.animations.enabled && !root.isVertical; NumberAnimation { duration: Metrics.chronoDuration(100); easing.type: Easing.OutCubic } }
@@ -120,7 +132,7 @@ Item {
             x: (root.isBottom || root.isTop) ? (parent.width - width) / 2 : (root.isLeft ? (root.isDefault ? 0 : root.dockMargin) : parent.width - width - (root.isDefault ? 0 : root.dockMargin))
             y: root.isVertical ? (parent.height - height) / 2 : (root.isTop ? (root.isDefault ? 0 : root.dockMargin) : parent.height - height - (root.isDefault ? 0 : root.dockMargin))
 
-            Behavior on x { enabled: Config.runtime.appearance.animations.enabled; NumberAnimation { duration: Metrics.chronoDuration(100); easing.type: Easing.OutCubic } }
+            Behavior on x { enabled: Config.runtime.appearance.animations.enabled; NumberAnimation { duration: Metrics.chronoDuration(250); easing.type: Easing.OutCubic } }
             Behavior on y { enabled: Config.runtime.appearance.animations.enabled; NumberAnimation { duration: Metrics.chronoDuration(100); easing.type: Easing.OutCubic } }
 
             opacity: root.reveal ? 1 : 0
