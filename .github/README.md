@@ -204,9 +204,10 @@ Contributions are welcome. When contributing:
 
 ---
 
-<h2 align="center">✦ Collaborators ✦</h2>
+<h2 align="center">✦ Team/Project Members ✦</h2>
 
-* [@TanujairamV](https://github.com/TanujairamV): Material UI Developer
+* [@xZepyx](https://github.com/xZepyx): Founder & Maintainer
+* [@TanujairamV](https://github.com/TanujairamV): Material UI Developer & Designer
 * [@Saturno](https://github.com/Saturno-0): Logical Developer
 
 ---
