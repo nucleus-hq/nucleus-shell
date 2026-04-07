@@ -22,59 +22,9 @@ import qs.modules.interface.dock
 ShellRoot {
     id: shellroot
 
-    // Modules
-    LazyLoader {
-        id: barLoader
-        source: Contracts.bar.source
-        active: Contracts.bar.active && Config.runtime.bar.enabled
-    }
-    LazyLoader {
-        id: backgroundLoader
-        source: Contracts.background.source
-        active: Contracts.background.active && Config.runtime.appearance.background.enabled
-    }
-    LazyLoader {
-        id: powerMenuLoader
-        source: Contracts.powerMenu.source
-        active: Contracts.powerMenu.active && Globals.visiblility.powermenu
-    }
-    LazyLoader {
-        id: launcherLoader
-        source: Contracts.launcher.source
-        active: Contracts.launcher.active && Globals.visiblility.launcher
-    }
-    LazyLoader {
-        id: notificationsLoader
-        source: Contracts.notifications.source
-        active: Contracts.notifications.active && Config.runtime.notifications.enabled
-    }
-    LazyLoader {
-        id: overlaysLoader
-        source: Contracts.overlays.source
-        active: Contracts.overlays.active && Config.runtime.overlays.enabled
-    }
-    LazyLoader {
-        id: sidebarRightLoader
-        source: Contracts.sidebarRight.source
-        active: Contracts.sidebarRight.active
-    }
-    LazyLoader {
-        id: sidebarLeftLoader
-        source: Contracts.sidebarLeft.source
-        active: Contracts.sidebarLeft.active
-    }
-    LazyLoader {
-        id: lockScreenLoader
-        source: Contracts.lockScreen.source
-        active: Contracts.lockScreen.active
-    }
-    LazyLoader {
-        id: dockLoader
-        source: Contracts.dock.source
-        active: Contracts.dock.active && (Config.dock?.enabled ?? true)
-    }
+    ModuleHost { }
 
-    // Services
+    // Services — unchanged
     Settings       { }
     Ipc            { }
     Intelligence   { }
