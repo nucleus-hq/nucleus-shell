@@ -14,6 +14,21 @@ import Qt5Compat.GraphicalEffects
 
 PanelWindow {
     id: sidebarRight
+
+    // Track which screen to open on — updated when sidebar is toggled open
+    property var sidebarScreen: Quickshell.screens[0]
+    screen: sidebarScreen
+
+    Connections {
+        target: Globals.visiblility
+        function onSidebarRightChanged() {
+            if (Globals.visiblility.sidebarRight && Compositor.require("hyprland") && Hyprland.focusedMonitor) {
+                const s = Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor.name)
+                if (s) sidebarRight.sidebarScreen = s
+            }
+        }
+    }
+
     WlrLayershell.namespace: "nucleus:sidebarRight"
     WlrLayershell.layer: WlrLayer.Overlay
     exclusionMode: ExclusionMode.Ignore

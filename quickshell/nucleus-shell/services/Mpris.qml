@@ -114,14 +114,21 @@ Singleton {
 
     Timer {
         interval: 1000
-        running: true
+        running: root.isPlaying
         repeat: true
         onTriggered: {
-            updateActivePlayer();
             if (activePlayer)
                 root.position = activePlayer.position;
-
         }
+    }
+
+    // Player selection runs only on player list changes (via Connections below),
+    // not on every tick — avoids constant polling when nothing is playing
+    Timer {
+        interval: 5000
+        running: true
+        repeat: true
+        onTriggered: updateActivePlayer()
     }
 
     Connections {

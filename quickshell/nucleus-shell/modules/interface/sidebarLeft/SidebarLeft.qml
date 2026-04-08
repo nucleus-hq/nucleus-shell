@@ -14,6 +14,20 @@ import qs.modules.components
 PanelWindow {
     id: sidebarLeft
 
+    // Track which screen to open on — updated when sidebar is toggled open
+    property var sidebarScreen: Quickshell.screens[0]
+    screen: sidebarScreen
+
+    Connections {
+        target: Globals.visiblility
+        function onSidebarLeftChanged() {
+            if (Globals.visiblility.sidebarLeft && Compositor.require("hyprland") && Hyprland.focusedMonitor) {
+                const s = Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor.name)
+                if (s) sidebarLeft.sidebarScreen = s
+            }
+        }
+    }
+
     property real sidebarLeftWidth: 480
 
     property bool useMergedSidebarLayout: Config.runtime.misc.useMergedSidebarLayout

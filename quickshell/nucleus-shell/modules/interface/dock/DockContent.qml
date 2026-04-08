@@ -74,8 +74,10 @@ Item {
     readonly property bool activeAppIsPinned: activeApp ? TaskbarApps.pinnedAppIds.includes(activeApp.appId) : false
 
     property bool reveal: {
-        if (activeWindowFullscreen)
-            return (Config.runtime.dock?.availableOnFullscreen ?? false) && (Config.runtime.dock?.hoverToReveal && dockMouseArea.containsMouse);
+        if (activeWindowFullscreen) {
+            if (!(Config.runtime.dock?.availableOnFullscreen ?? false)) return false;
+            return !(Config.runtime.dock?.hoverToReveal ?? false) || dockMouseArea.containsMouse;
+        }
         if (keepHidden)
             return (Config.runtime.dock?.hoverToReveal && dockMouseArea.containsMouse);
         return root.pinned || (Config.runtime.dock?.hoverToReveal && dockMouseArea.containsMouse) || !hasWindows
@@ -84,13 +86,14 @@ Item {
     readonly property int hoverRegionHeight: Config.runtime.dock?.hoverRegionHeight ?? 4
 
     // Margins exposed to Dock.qml so the PanelWindow shifts via WlrLayershell.margins
+    // Only applied for vertical (left/right) dock positions — horizontal docks stay centered
     readonly property int sidebarMarginLeft: {
-        if (isRight) return 0
+        if (isRight || !isVertical) return 0
         const sw = Globals.visiblility.sidebarLeft ? Globals.visiblility.sidebarLeftWidth : 0
         return sw > 0 ? sw + shadowSpace : 0
     }
     readonly property int sidebarMarginRight: {
-        if (isLeft) return 0
+        if (isLeft || !isVertical) return 0
         const sw = Globals.visiblility.sidebarRight ? Globals.visiblility.sidebarRightWidth : 0
         return sw > 0 ? sw + shadowSpace : 0
     }

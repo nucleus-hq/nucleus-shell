@@ -175,12 +175,14 @@ Item {
                 Layout.preferredHeight: 50
                 icon: "volume_up"
                 iconSize: Metrics.iconSize("large") + 3
+                useAnim: false
             }
 
             BrightnessSlider {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
                 icon: "brightness_high"
+                useAnim: false
             }
         }
 

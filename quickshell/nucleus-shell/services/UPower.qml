@@ -51,7 +51,7 @@ Item {
     }
 
     Timer {
-        interval: 2000
+        interval: 10000
         running: true
         repeat: true
         onTriggered: upowerProc.running = true

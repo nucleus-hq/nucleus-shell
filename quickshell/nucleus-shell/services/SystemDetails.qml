@@ -86,12 +86,16 @@ Singleton {
     FileView { id: uptimeFile; path: "/proc/uptime" }
 
 
+    // Tick counter to stagger expensive processes at different intervals
+    property int _tick: 0
+
     Timer {
-        interval: 1000
+        interval: 2000
         running: true
         repeat: true
 
         onTriggered: {
+            root._tick++
 
             cpuStat.reload()
             memInfo.reload()
@@ -173,13 +177,21 @@ Singleton {
             root.uptime = upString
 
 
+            // Every 2s: CPU temperature
             cpuTempProc.running = true
-            diskProc.running = true
-            ipProc.running = true
-            procCountProc.running = true
-            swapProc.running = true
-            keyboardLayoutProc.running = true
-            loggedUsersProc.running = true
+
+            // Every 10s: swap, process count
+            if (root._tick % 5 === 0) {
+                swapProc.running = true
+                procCountProc.running = true
+            }
+
+            // Every 30s: disk, IP, logged users (these rarely change)
+            if (root._tick % 15 === 0) {
+                diskProc.running = true
+                ipProc.running = true
+                loggedUsersProc.running = true
+            }
         }
     }
 
@@ -294,25 +306,6 @@ Singleton {
                 if (lines.length > 0)
                     root.loggedInUsers =
                         parseInt(lines[lines.length-1].replace("# users=",""))
-            }
-        }
-    }
-
-
-    /* Keyboard Layout */
-
-    Process {
-        id: keyboardLayoutProc
-        command: [
-            "sh","-c",
-            "hyprctl devices -j | jq -r '.keyboards[] | .layout' | head -n1"
-        ]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const layout = text.trim()
-                if (layout)
-                    root.keyboardLayout = layout
             }
         }
     }
