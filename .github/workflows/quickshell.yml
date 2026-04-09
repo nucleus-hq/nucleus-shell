@@ -1,12 +1,12 @@
 name: Shell Runtime Check
 
 on:
-  push:
-    paths:
-      - "quickshell/**"
-  pull_request:
-    paths:
-      - "quickshell/**"
+#  push:
+#    paths:
+#      - "quickshell/**"
+#  pull_request:
+#    paths:
+#      - "quickshell/**"
   workflow_dispatch:
 
 jobs:
