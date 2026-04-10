@@ -41,6 +41,7 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.topMargin: 75
         height: 72
         color: "transparent"
         z: 10
@@ -95,6 +96,9 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             height: 1
+            anchors.leftMargin: 15
+            anchors.rightMargin: 15
+            anchors.bottomMargin: -10
             color: Appearance.m3colors.m3outlineVariant
             opacity: 0.5
         }
@@ -197,7 +201,7 @@ Item {
         id: wallpaperGrid
         visible: wallpaperModel.count > 0
         anchors.fill: parent
-        anchors.topMargin: header.height + 16
+        anchors.topMargin: header.height + 16 + 75
         anchors.leftMargin: 16
         anchors.rightMargin: 16
         anchors.bottomMargin: 16
