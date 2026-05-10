@@ -224,6 +224,7 @@ Singleton {
                     property bool enabled: true
                     property string apiKey: ""
                 }
+                property bool enableScreenBorders: true
             }
 
             

@@ -55,15 +55,21 @@ ContentMenu {
 
     ContentCard {
         StyledText {
-            text: "Sidebar Layout"
+            text: "Layouts"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
         }
 
         StyledSwitchOption {
-            title: "Merged Layout"
+            title: "Merged Sidebar Layout"
             description: "Use merged layout for sidebars when bar is merged."
             prefField: "misc.useMergedSidebarLayout"
+        }
+
+        StyledSwitchOption {
+            title: "Enable Screen Borders"
+            description: "Enable screen borders from huggin' corners."
+            prefField: "misc.enableScreenBorders"
         }
     }
 

@@ -85,6 +85,11 @@ Scope {
                 }
             }
 
+            // Hugging Corners also work as screen borders.
+            HuggingCorners {
+                opacity: ConfigResolver.bar(bar.displayName).gothCorners && !ConfigResolver.bar(bar.displayName).floating && ConfigResolver.bar(bar.displayName).enabled && !ConfigResolver.bar(bar.displayName).merged ? 1 : 0
+            }
+
             GothCorners {
                 opacity: ConfigResolver.bar(bar.displayName).gothCorners && !ConfigResolver.bar(bar.displayName).floating && ConfigResolver.bar(bar.displayName).enabled && !ConfigResolver.bar(bar.displayName).merged ? 1 : 0
             }
