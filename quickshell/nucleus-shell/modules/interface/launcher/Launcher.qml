@@ -29,7 +29,6 @@ PanelWindow {
     property bool   isSearching:   searchText.length > 0
     property string layout:        Config.runtime.launcher.layout === "list" ? "list" : "grid"
 
-    // ── Web search engine ─────────────────────────────────────────
     readonly property var _searchEngines: ({
         "google":     { label: "Google",     icon: "language", url: "https://www.google.com/search?q=" },
         "brave":      { label: "Brave",      icon: "language", url: "https://search.brave.com/search?q=" },
@@ -42,7 +41,6 @@ PanelWindow {
         return _searchEngines[k] ? k : "google"
     }
 
-    // ── Calculator ────────────────────────────────────────────────
     function _evalCalc(expr) {
         if (!expr || expr.trim() === "") return null
         // Only attempt eval on strings that look mathematical
@@ -55,7 +53,6 @@ PanelWindow {
         return null
     }
 
-    // ── Unified search action ─────────────────────────────────────
     // Returns null when no special action, or an object:
     //   { type: "calc",   result: number, expr: string }
     //   { type: "web",    query: string,  engineLabel: string, url: string }
@@ -144,7 +141,7 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        color:   "#000000"
+        color:   "transparent"
         opacity: launcher.visible ? 0.45 : 0
         z: 0
         Behavior on opacity {
