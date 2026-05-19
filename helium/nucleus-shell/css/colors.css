@@ -1,0 +1,107 @@
+/*
+* Css Colors
+* Generated with Matugen
+*/
+:root {
+
+    --background: #131314;
+
+    --error: #ffb4ab;
+
+    --error_container: #93000a;
+
+    --inverse_on_surface: #303031;
+
+    --inverse_primary: #546069;
+
+    --inverse_surface: #e4e2e3;
+
+    --on_background: #e4e2e3;
+
+    --on_error: #690005;
+
+    --on_error_container: #ffdad6;
+
+    --on_primary: #26323a;
+
+    --on_primary_container: #d7e4ef;
+
+    --on_primary_fixed: #111d25;
+
+    --on_primary_fixed_variant: #3c4851;
+
+    --on_secondary: #2a3136;
+
+    --on_secondary_container: #dde3ea;
+
+    --on_secondary_fixed: #161c21;
+
+    --on_secondary_fixed_variant: #41484d;
+
+    --on_surface: #e4e2e3;
+
+    --on_surface_variant: #c7c6c7;
+
+    --on_tertiary: #20333e;
+
+    --on_tertiary_container: #d2e5f4;
+
+    --on_tertiary_fixed: #0a1e28;
+
+    --on_tertiary_fixed_variant: #374955;
+
+    --outline: #919091;
+
+    --outline_variant: #464748;
+
+    --primary: #bbc8d2;
+
+    --primary_container: #3c4851;
+
+    --primary_fixed: #d7e4ef;
+
+    --primary_fixed_dim: #bbc8d2;
+
+    --scrim: #000000;
+
+    --secondary: #c1c7ce;
+
+    --secondary_container: #41484d;
+
+    --secondary_fixed: #dde3ea;
+
+    --secondary_fixed_dim: #c1c7ce;
+
+    --shadow: #000000;
+
+    --source_color: #7cafcf;
+
+    --surface: #131314;
+
+    --surface_bright: #39393a;
+
+    --surface_container: #1f2020;
+
+    --surface_container_high: #292a2b;
+
+    --surface_container_highest: #343536;
+
+    --surface_container_low: #1b1c1c;
+
+    --surface_container_lowest: #0d0e0f;
+
+    --surface_dim: #131314;
+
+    --surface_tint: #bbc8d2;
+
+    --surface_variant: #464748;
+
+    --tertiary: #b6c9d8;
+
+    --tertiary_container: #374955;
+
+    --tertiary_fixed: #d2e5f4;
+
+    --tertiary_fixed_dim: #b6c9d8;
+
+}

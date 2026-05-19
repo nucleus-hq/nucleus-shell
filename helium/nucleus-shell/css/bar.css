@@ -1,0 +1,197 @@
+@import url("colors.css");
+@import url("defaults.css");
+
+/* Base Bar Styling */
+.bar {
+    background-color: var(--surface);
+    color: var(--on_surface);
+    font-family: sans-serif;
+    font-size: 14px;
+    padding: 2px 12px; 
+    margin: 0px;
+}
+
+/* Workspace Container */
+.wscontainer, .workspaces {
+    background-color: var(--surface_container_high);
+    border-radius: 16px;
+    padding: 4px 0px;
+    margin: 4px 0px 4px 0px;
+}
+
+/* Base Workspace Button Styling */
+.workspace {
+    background-image: none; /* Fixed: Prevents GTK theme background-color overrides */
+    background-color: transparent;
+    color: var(--on_surface_variant);
+    border: none;
+    border-radius: 50%;
+    min-width: 29px;
+    min-height: 28px;
+    padding: 0;
+    margin: -1px 0;
+    transition: all 0.2s ease;
+}
+
+.workspace:hover {
+    background-color: var(--surface_bright);
+    color: var(--on_surface);
+}
+
+.workspace.occupied {
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.workspace.active {
+    background-color: var(--primary_fixed);
+    color: var(--on_primary_fixed);
+    font-weight: bold;
+}
+
+.workspace.empty {
+    color: var(--on_surface_variant);
+}
+
+/* Custom Pill shape styling for the right side clock */
+.clock-pill {
+    background-color: var(--surface_container_high);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin: 4px 0px 4px 0px;
+}
+
+.clock-icon {
+    color: var(--primary);
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.clock-sep {
+    color: var(--outline_variant);
+    font-size: 18px;
+    margin-right: 5px;
+}
+
+.clock-time {
+    color: var(--on_surface);
+    font-weight: 700;
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.activeIndicator {
+    background-color: var(--surface_container_high);
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 0px 8px;
+    margin: 4px 0px 4px 0px;
+    margin-left: -4px;        
+}
+
+.classLabel {
+    font-size: 10px;
+    font-weight: 500;
+    font-family: "JetBrains Mono";
+    color: #888888;
+    margin-left: 2px;
+}
+
+.windowLabel {
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "JetBrains Mono";
+    margin-left: 2px; 
+    margin-top: 2px;
+}
+
+.powerbutton-pill {
+    background-color: var(--surface_container_high);
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    padding: 2px 8px;
+    margin: 4px -4px 4px 0px;
+    transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.powerbutton {
+    background-image: none;     
+    background-color: transparent;
+    color: var(--error, #ffb4ab);  
+    border: none;                 
+    box-shadow: none;             
+    
+    font-family: "Material Symbols Rounded";
+    font-size: 20px;            
+    padding: 0px;
+}
+
+.powerbutton-pill:hover {
+    background-color: var(--error_container, #93000a);
+}
+.powerbutton-pill:hover .powerbutton {
+    color: var(--on_error_container, #ffdad6);
+}
+
+.status-pill {
+    background-color: var(--surface_container_high);
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 0px 8px;
+    margin: 4px 0px 4px 0px;
+    margin-left: -4px;        
+    transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.status-pill:hover {
+    background-color: var(--on_primary);
+}
+
+.wifiIcon {
+    margin-left: 4px;
+}
+
+.media-pill {
+    background-color: var(--surface_container_high);
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    padding: 2px 8px;
+    margin: 4px -4px 4px 0px;
+    transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.media-art-container {
+    border-radius: 8px;
+    min-width: 20px;
+    min-height: 26px;
+}
+
+/* Forces image widget child to fill the container layout bounds safely */
+.media-art-container image {
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+}
+
+.media-text-container
+
+.media-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--on_surface);
+    margin-bottom: -2px; /* Pull elements slightly tighter vertically */
+}
+
+.media-artist {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--on_surface_variant);
+}
