@@ -31,8 +31,8 @@ Key goals:
   If you encounter a problem in the current release, please first test against the latest source code by cloning the repository (`git clone ...`). This ensures you are not reporting an issue that has already been fixed.
   Only open an issue if the problem is still reproducible on the latest source.
 
-> [!CAUTION]
-> * You will find a lot of design and ui inconsistencies with the latest git clone because it is under development. Prefer using the latest release rather than the latest clone.
+> [!NOTE]
+> * **nucleus-shell** is currently being actively rewritten in [helium](https://github.com/xZepyx/helium). Check the [v2](https://github.com/nucleus-hq/nucleus-shell/tree/v2) branch and [#46](https://github.com/nucleus-hq/nucleus-shell/pull/46) for more details.
 
 
 ---
