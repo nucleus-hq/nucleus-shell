@@ -1,0 +1,8 @@
+@import url("colors.css");
+
+.sidebarRight {
+    background-color: var(--surface);
+    color: var(--on_surface);
+    min-width: 450px;
+    border-radius: 18px;
+}

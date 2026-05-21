@@ -17,6 +17,9 @@ from helium.compositor.hyprland import (
     get_workspaces,
     get_active_workspace,
 )
+from helium.managers import WindowManager
+
+wm = WindowManager.get_default() 
 
 # Setup network service
 net = None
@@ -242,45 +245,57 @@ class ActiveWindowIndicator(Box):
         self.last_bottom = bottom_text
         return True
 
-
 class PowerButton(Box):
-    def __init__(self):
+    def __init__(self, pmRef=None):
         super().__init__(
             orientation="horizontal",
             spacing=0
         )
 
+        self.pm = pmRef
         powerbutton = Button(label="power_settings_new")
         powerbutton.add_css_class("powerbutton")
-        powerbutton.on_click(lambda: print("PowerButton Clicked"))
+        powerbutton.on_click(self.on_pill_clicked)
 
         self.add(powerbutton)
         self.add_css_class("powerbutton-pill")
 
+    def on_pill_clicked(self):
+        if self.pm:
+            if self.pm.is_visible:
+                self.pm.hide()
+            else:
+                self.pm.show()
+
 
 class StatusPills(Box):
-    def __init__(self):
+    def __init__(self, sbrRef=None):
         super().__init__(
             orientation="horizontal",
-            spacing=6
+            spacing=0
         )
-        self.add_css_class("status-pill")
+        self.add_css_class("status-pill-container")
 
-        is_connected = False
-        strength = 0
+        self.sidebar = sbrRef # store the ref locally
+
+        # Set default state tracks
+        self.wifi_symbol = "signal_wifi_off"
+        self.bluetooth_symbol = "bluetooth"
+
         if net:
             is_connected = getattr(net, "connected", False)
             strength = getattr(net, "signal_strength", 0)
+            self.wifi_symbol = self.get_material_wifi_symbol(is_connected, strength)
 
-        initial_symbol = self.get_material_wifi_symbol(is_connected, strength)
-        self.wifiIcon = MaterialSymbol(symbol=initial_symbol, size=20)
-        self.bluetoothIcon = MaterialSymbol(symbol="bluetooth", size=20)
+        # Assemble initial dual-glyph string label
+        initial_label = f"{self.wifi_symbol} {self.bluetooth_symbol}"
 
-        self.wifiIcon.add_css_class("wifiIcon")
-        self.bluetoothIcon.add_css_class("bluetoothIcon")
+        # Create one unified button containing both icons as text ligatures
+        self.pillButton = Button(label=initial_label)
+        self.pillButton.add_css_class("status-pill-button")
+        self.pillButton.on_click(self.on_pill_clicked)
 
-        self.add(self.wifiIcon)
-        self.add(self.bluetoothIcon)
+        self.add(self.pillButton)
 
         if net:
             helium.functions.Poll(3000, self.update_status)
@@ -306,11 +321,22 @@ class StatusPills(Box):
                 is_connected = getattr(net, "connected", False)
                 strength = getattr(net, "signal_strength", 0)
                 
-                next_symbol = self.get_material_wifi_symbol(is_connected, strength)
-                self.wifiIcon.set_symbol(next_symbol)
+                next_wifi = self.get_material_wifi_symbol(is_connected, strength)
+                
+                if next_wifi != self.wifi_symbol:
+                    self.wifi_symbol = next_wifi
+                    # Refresh the dual-icon string label
+                    self.pillButton.set_label(f"{self.wifi_symbol} {self.bluetooth_symbol}")
             except Exception:
                 pass
         return True
+
+    def on_pill_clicked(self):
+        if self.sidebar:
+            if self.sidebar.is_visible:
+                self.sidebar.hide()
+            else:
+                self.sidebar.show()
 
 
 class Media(Box):
@@ -394,7 +420,7 @@ class Media(Box):
         return True
 
 class Bar(Panel):
-    def __init__(self, monitor: int):
+    def __init__(self, monitor: int, sbrRef=None, pmRef=None):
         position = helium.config.get("bar.position") or "top"
 
         if position == "bottom":
@@ -431,9 +457,9 @@ class Bar(Panel):
         
         # Right setup
         rightLayout = Box(orientation="horizontal", spacing=2)
-        rightLayout.add(StatusPills())
+        rightLayout.add(StatusPills(sbrRef=sbrRef))
         rightLayout.add(Clock())
-        rightLayout.add(PowerButton())
+        rightLayout.add(PowerButton(pmRef=pmRef))
 
         layout.set_end(rightLayout)
         

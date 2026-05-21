@@ -1,4 +1,9 @@
 {
+  "appearance": {
+    "background": {
+      "path": "/home/zepyx/Pictures/Wallpapers/Earth.jpg"
+    }
+  },
   "bar": {
     "height": 45,
     "position": "top"
