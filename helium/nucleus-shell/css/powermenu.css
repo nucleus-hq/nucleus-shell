@@ -34,9 +34,10 @@ grid {
     min-width: 160px;
     min-height: 160px;
 
-    transition: background-color 200ms ease-in-out;
+    /* transition: background-color 200ms ease-in-out; */
+    transition: border-radius 80ms ease-in-out;
 }
 
 .clickable:hover {
-    background-color: var(--primary);
+    border-radius: 50%;
 }

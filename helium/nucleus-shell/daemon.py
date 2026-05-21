@@ -1,8 +1,8 @@
 import config
 import helium
-from modules.bar import Bar
-from modules.sidebarRight import SidebarRight
-from modules.powermenu import PowerMenu
+from modules.bar.bar import Bar
+from modules.sidebarRight.sidebarRight import SidebarRight
+from modules.powermenu.powermenu import PowerMenu
 from helium.managers import CssManager
 
 helium.init()

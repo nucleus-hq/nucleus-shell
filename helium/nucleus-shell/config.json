@@ -6,6 +6,20 @@
   },
   "bar": {
     "height": 45,
+    "modules": {
+      "center": [
+        "workspaces",
+        "clock"
+      ],
+      "end": [
+        "status",
+        "power"
+      ],
+      "start": [
+        "active_window",
+        "media"
+      ]
+    },
     "position": "top"
   },
   "theme": "dark"

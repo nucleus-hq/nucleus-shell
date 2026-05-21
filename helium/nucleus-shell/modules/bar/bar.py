@@ -36,6 +36,41 @@ try:
 except Exception:
     pass
 
+def build_module(name, ctx):
+    if name == "active_window":
+        return ActiveWindowIndicator()
+    elif name == "media":
+        return Media()
+    elif name == "workspaces":
+        return WorkspaceContainer()
+    elif name == "status":
+        return StatusPills(sbrRef=ctx.get("sbrRef"))
+    elif name == "clock":
+        return Clock()
+    elif name == "power":
+        return PowerButton(pmRef=ctx.get("pmRef"))
+    return None
+
+def build_section(module_names, ctx):
+    box = Box(orientation="horizontal", spacing=2)
+    widgets = []
+    for name in module_names:
+        w = build_module(name, ctx)
+        if w:
+            widgets.append(w)
+    for i, w in enumerate(widgets):
+        n = len(widgets)
+        if n == 1:
+            w.add_css_class("module-single")
+        elif i == 0:
+            w.add_css_class("module-first")
+        elif i == n - 1:
+            w.add_css_class("module-last")
+        else:
+            w.add_css_class("module-middle")
+        box.add(w)
+    return box
+
 # Bar widgets
 class WorkspaceContainer(Box):
     def __init__(self):
@@ -441,27 +476,13 @@ class Bar(Panel):
         )
 
         layout = CenterBox()
+        ctx = {"sbrRef": sbrRef, "pmRef": pmRef}
 
-        # Left setup
-        leftLayout = Box(orientation="horizontal", spacing=2)
-        leftLayout.add(ActiveWindowIndicator())
-        leftLayout.add(Media())
-
-        layout.set_start(leftLayout)
-
-        # Center setup
-        centerLayout = Box(orientation="horizontal", spacing=4)
-        centerLayout.add(WorkspaceContainer())
-
-        layout.set_center(centerLayout)
-        
-        # Right setup
-        rightLayout = Box(orientation="horizontal", spacing=2)
-        rightLayout.add(StatusPills(sbrRef=sbrRef))
-        rightLayout.add(Clock())
-        rightLayout.add(PowerButton(pmRef=pmRef))
-
-        layout.set_end(rightLayout)
+        for section in ["start", "center", "end"]:
+            names = helium.config.get(f"bar.modules.{section}") or []
+            if names:
+                section_box = build_section(names, ctx)
+                getattr(layout, f"set_{section}")(section_box)
         
         self.set_child(layout)
         self.add_css_class("bar")

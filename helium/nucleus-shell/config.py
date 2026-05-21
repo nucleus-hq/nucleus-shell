@@ -1,10 +1,17 @@
 import os, json
 import helium
 
+class BarModulesConfig:
+    def __init__(self):
+        self.start = ["active_window", "media"]
+        self.center = ["workspaces"]
+        self.end = ["status", "clock", "power"]
+
 class BarConfig:
     def __init__(self):
         self.height = 45
         self.position = "top"
+        self.modules = BarModulesConfig()
 
 class BackgroundConfig:
     def __init__(self):
