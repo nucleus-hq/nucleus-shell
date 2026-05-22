@@ -20,11 +20,21 @@ class BackgroundConfig:
 class AppearanceConfig:
     def __init__(self):
         self.background = BackgroundConfig()
+        self.theme = "dark"
+
+class MiscConfig:
+    def __init__(self):
+        self.nightlight = NightlightConfig()
+
+class NightlightConfig:
+    def __init__(self):
+        self.variant = "warm"
 
 class Configuration:
     def __init__(self):
         self.bar = BarConfig()
         self.appearance = AppearanceConfig()
+        self.misc = MiscConfig()
         self.theme = "dark"
 
 config = helium.config

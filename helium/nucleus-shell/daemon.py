@@ -1,6 +1,6 @@
 import config
 import helium
-from modules.bar.bar import Bar
+from modules.bar.bar import Bar, reload_bar_config
 from modules.sidebarRight.sidebarRight import SidebarRight
 from modules.powermenu.powermenu import PowerMenu
 from helium.managers import CssManager
@@ -14,5 +14,7 @@ CssManager.load("css/powermenu.css")
 sidebar = SidebarRight(0)
 powermenu = PowerMenu(0)
 Bar(0, sbrRef=sidebar, pmRef=powermenu)
+helium.functions.Poll(50, reload_bar_config)
+
 
 helium.run()

@@ -52,7 +52,7 @@ class PowerMenu(Window):
         
         # Assuming placeholder commands for your remaining buttons based on previous context
         self.layout.attach(Clickable("restart_alt", ["reboot"], self), 1, 1)
-        self.layout.attach(Clickable("light_off", ["echo", "turn off lights/monitor placeholder"], self), 2, 1)
+        self.layout.attach(Clickable("light_off", ["systemctl", "hibernate"], self), 2, 1)
 
         self.set_child(self.layout)
 

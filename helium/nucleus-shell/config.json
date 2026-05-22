@@ -1,8 +1,9 @@
 {
   "appearance": {
     "background": {
-      "path": "/home/zepyx/Pictures/Wallpapers/Earth.jpg"
-    }
+      "path": "/home/zepyx/Pictures/Wallpapers/Golden-Candy.jpg"
+    },
+    "theme": "light"
   },
   "bar": {
     "height": 45,
@@ -21,6 +22,11 @@
       ]
     },
     "position": "top"
+  },
+  "misc": {
+    "nightlight": {
+      "variant": "cold"
+    }
   },
   "theme": "dark"
 }

@@ -1,3 +1,4 @@
+import copy
 import helium
 import re
 import json
@@ -51,8 +52,8 @@ def build_module(name, ctx):
         return PowerButton(pmRef=ctx.get("pmRef"))
     return None
 
-def build_section(module_names, ctx):
-    box = Box(orientation="horizontal", spacing=2)
+def build_section(module_names, ctx, orientation="horizontal"):
+    box = Box(orientation=orientation, spacing=2)
     widgets = []
     for name in module_names:
         w = build_module(name, ctx)
@@ -454,9 +455,30 @@ class Media(Box):
 
         return True
 
+_current_bar = None
+
+def reload_bar_config():
+    b = _current_bar
+    if b:
+        b.check_config_reload()
+    return True
+
+
 class Bar(Panel):
     def __init__(self, monitor: int, sbrRef=None, pmRef=None):
-        position = helium.config.get("bar.position") or "top"
+        global _current_bar
+
+        self._sbrRef = sbrRef
+        self._pmRef = pmRef
+        self._monitor = monitor
+        self._pos = helium.config.get("bar.position") or "top"
+
+        if _current_bar is not None:
+            _current_bar.hide()
+
+        position = self._pos
+        is_vertical = position in ("left", "right")
+        thickness = helium.config.get("bar.height")
 
         if position == "bottom":
             anchor = ["bottom", "left", "right"]
@@ -471,19 +493,63 @@ class Bar(Panel):
             namespace="nucleus:bar",
             anchor=anchor,
             exclusive=True,
-            width=-1,
-            height=helium.config.get("bar.height")
+            width=thickness if is_vertical else -1,
+            height=-1 if is_vertical else thickness,
         )
 
+        self.add_css_class("bar")
+        self._old_config = copy.deepcopy(helium.config.data) if helium.config.data else {}
+        self.build_layout()
+
+        if is_vertical:
+            angle = 270 if position == "left" else 90
+            self.set_style(f"transform: rotate({angle}deg);")
+
+        self.show()
+
+        _current_bar = self
+
+    def check_config_reload(self):
+        old = self._old_config
+        try:
+            helium.config.reload()
+        except Exception:
+            return True
+        new = copy.deepcopy(helium.config.data) if helium.config.data else {}
+
+        old_bar = old.get("bar", {}) if isinstance(old, dict) else {}
+        new_bar = new.get("bar", {}) if isinstance(new, dict) else {}
+
+        if not new_bar:
+            self._old_config = new
+            return True
+
+        if old_bar.get("modules") != new_bar.get("modules"):
+            self.build_layout()
+
+        if old_bar.get("height") != new_bar.get("height"):
+            t = new_bar.get("height", 45)
+            if self._pos in ("left", "right"):
+                self.set_width(t)
+            else:
+                self.set_height(t)
+
+        if old_bar.get("position") != new_bar.get("position"):
+            self._old_config = new
+            Bar(self._monitor, sbrRef=self._sbrRef, pmRef=self._pmRef)
+            return False
+
+        self._old_config = new
+        return True
+
+    def build_layout(self):
         layout = CenterBox()
-        ctx = {"sbrRef": sbrRef, "pmRef": pmRef}
+        ctx = {"sbrRef": self._sbrRef, "pmRef": self._pmRef}
 
         for section in ["start", "center", "end"]:
             names = helium.config.get(f"bar.modules.{section}") or []
             if names:
                 section_box = build_section(names, ctx)
                 getattr(layout, f"set_{section}")(section_box)
-        
+
         self.set_child(layout)
-        self.add_css_class("bar")
-        self.show()
