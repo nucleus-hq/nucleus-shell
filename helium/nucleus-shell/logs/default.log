@@ -1,0 +1,30 @@
+
+(process:1894): Gtk-WARNING **: 11:00:25.409: Theme parser error: gtk.css:39:31-32: Junk at end of value for background-color
+
+(process:1894): Gtk-WARNING **: 11:00:25.409: Theme parser error: gtk.css:40:20-21: Junk at end of value for color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:44:35-36: Junk at end of value for background-color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:45:20-21: Junk at end of value for color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:49:43-44: Junk at end of value for background-color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:54:31-32: Junk at end of value for background-color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:55:20-21: Junk at end of value for color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:59:31-32: Junk at end of value for background-color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:60:20-21: Junk at end of value for color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:64:31-32: Junk at end of value for background-color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:65:20-21: Junk at end of value for color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:69:20-21: Junk at end of value for color
+
+(process:1894): Gtk-WARNING **: 11:00:25.410: Theme parser error: gtk.css:73:20-21: Junk at end of value for color
+[Helium] CSS Loaded: css/bar.css
+[Helium] CSS Loaded: css/colors.css
+[Helium] CSS Loaded: css/sidebarRight.css
+[Helium] CSS Loaded: css/powermenu.css
