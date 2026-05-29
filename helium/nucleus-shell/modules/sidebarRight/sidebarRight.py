@@ -4,7 +4,7 @@ import re
 from helium.types import (
     Window, Box, Label, Button, CenterBox, Separator, Scale, MaterialSymbol
 )
-from services import system, theme, nightlight, recorder
+from services import system, nightlight, recorder, idleinhibit
 from modules.sidebarRight.quicktoggle import QuickToggle
 
 net_service = None
@@ -73,12 +73,12 @@ class QuickToggleSection(Box):
             on_toggle_cb=lambda x: self.toggle_bluetooth(x)
         )
 
-        self.theme_toggle = QuickToggle(
+        self.idle_toggle = QuickToggle(
             name="",
-            subtext="",
-            icon="dark_mode",
+            subtext="Inactive",
+            icon="local_cafe",
             toggle_type="small",
-            on_toggle_cb=lambda active: self.handle_theme_toggle(active)
+            on_toggle_cb=lambda active: self.handle_idle_toggle(active)
         )
 
         self.nightlight_toggle = QuickToggle(
@@ -131,7 +131,7 @@ class QuickToggleSection(Box):
         self.row_top.add(self.bt_toggle)
 
         self.row_bottom = Box(orientation="horizontal", spacing=4)
-        self.row_bottom.add(self.theme_toggle)
+        self.row_bottom.add(self.idle_toggle)
         self.row_bottom.add(self.battery_saver_toggle)
         self.row_bottom.add(self.dnd_toggle)
 
@@ -148,7 +148,7 @@ class QuickToggleSection(Box):
         self.sync_bluetooth_ui_state()
         self.sync_battery_ui_state()
         self.sync_nightlight_ui_state()
-        self.sync_theme_ui_state()
+        self.sync_idle_ui_state()
         self.sync_recorder_ui_state()
         self.sync_privacy_ui_state()
 
@@ -271,34 +271,24 @@ class QuickToggleSection(Box):
             self.nightlight_toggle.update_icon("light_off")
             self.nightlight_toggle.set_active(False, trigger_cb=False)
 
-    def handle_theme_toggle(self, active: bool):
-        current_theme_string = "light" if active else "dark"
+    def handle_idle_toggle(self, active: bool):
+        is_now_active, status = idleinhibit.toggle_idle_inhibit()
+        self.sync_idle_ui_state(is_now_active)
 
-        new_mode = theme.toggle_theme_mode(current_theme_string)
-        
-        self.sync_theme_ui_state(new_mode)
-        
-        try:
-            helium.style.reload() 
-        except Exception:
-            pass
-
-    def sync_theme_ui_state(self, current_mode: str = None):
-        if current_mode is None:
-            try:
-                current_mode = helium.config.get("appearance.theme")
-            except Exception:
-                try:
-                    current_mode = helium.config.get("appearance.theme")
-                except Exception:
-                    current_mode = "dark"
-
-        if current_mode == "dark":
-            self.theme_toggle.update_icon("dark_mode")
-            self.theme_toggle.set_active(True, trigger_cb=False)
+    def sync_idle_ui_state(self, force_state: bool = None):
+        if force_state is None:
+            is_active = idleinhibit.is_inhibiting()
         else:
-            self.theme_toggle.update_icon("light_mode")
-            self.theme_toggle.set_active(False, trigger_cb=False)
+            is_active = force_state
+
+        if is_active:
+            self.idle_toggle.update_subtext("Active")
+            self.idle_toggle.update_icon("coffee")
+            self.idle_toggle.set_active(True, trigger_cb=False)
+        else:
+            self.idle_toggle.update_subtext("Inactive")
+            self.idle_toggle.update_icon("local_cafe")
+            self.idle_toggle.set_active(False, trigger_cb=False)
 
     def handle_recording_toggle(self, active: bool):
         is_running, status_message = recorder.toggle_recording()
@@ -422,7 +412,7 @@ class SidebarRight(Window):
             self.quick_toggles.sync_bluetooth_ui_state()
             self.quick_toggles.sync_battery_ui_state()
             self.quick_toggles.sync_nightlight_ui_state()
-            self.quick_toggles.sync_theme_ui_state()
+            self.quick_toggles.sync_idle_ui_state()
             self.quick_toggles.sync_recorder_ui_state()
             self.quick_toggles.sync_privacy_ui_state()
 
