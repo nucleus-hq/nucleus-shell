@@ -4,7 +4,7 @@ import re
 from helium.types import (
     Window, Box, Label, Button, CenterBox, Separator, Scale, MaterialSymbol
 )
-from services import system, theme, nightlight
+from services import system, theme, nightlight, recorder
 from modules.sidebarRight.quicktoggle import QuickToggle
 
 net_service = None
@@ -104,6 +104,28 @@ class QuickToggleSection(Box):
             on_toggle_cb=lambda x: self.toggle_battery_saver(x)
         )
 
+        self.recorder_toggle = QuickToggle(
+            name="Record",
+            subtext="Ready",
+            icon="screen_record",
+            on_toggle_cb=lambda active: self.handle_recording_toggle(active)
+        )
+
+        self.privacy_toggle = QuickToggle(
+            name="Privacy",
+            subtext="Active",
+            icon="mic",
+            on_toggle_cb=lambda active: self.handle_privacy_toggle(active)
+        )
+
+        self.recorder_toggle.add_css_class("recorder-toggle")
+        self.recorder_toggle.set_hexpand(False)
+        self.recorder_toggle.set_halign("start")
+
+        self.privacy_toggle.add_css_class("privacy-toggle")
+        self.privacy_toggle.set_hexpand(False)
+        self.privacy_toggle.set_halign("start")
+
         self.row_top = Box(orientation="horizontal", spacing=4)
         self.row_top.add(self.wifi_toggle)
         self.row_top.add(self.bt_toggle)
@@ -114,7 +136,9 @@ class QuickToggleSection(Box):
         self.row_bottom.add(self.dnd_toggle)
 
         self.row_last = Box(orientation="horizontal", spacing=4)
+        self.row_last.add(self.recorder_toggle)
         self.row_last.add(self.nightlight_toggle)
+        self.row_last.add(self.privacy_toggle)
 
         self.add(self.row_top)
         self.add(self.row_bottom)
@@ -125,6 +149,8 @@ class QuickToggleSection(Box):
         self.sync_battery_ui_state()
         self.sync_nightlight_ui_state()
         self.sync_theme_ui_state()
+        self.sync_recorder_ui_state()
+        self.sync_privacy_ui_state()
 
     def toggle_network(self, active: bool):
         try:
@@ -262,7 +288,10 @@ class QuickToggleSection(Box):
             try:
                 current_mode = helium.config.get("appearance.theme")
             except Exception:
-                current_mode = "dark"
+                try:
+                    current_mode = helium.config.get("appearance.theme")
+                except Exception:
+                    current_mode = "dark"
 
         if current_mode == "dark":
             self.theme_toggle.update_icon("dark_mode")
@@ -270,6 +299,64 @@ class QuickToggleSection(Box):
         else:
             self.theme_toggle.update_icon("light_mode")
             self.theme_toggle.set_active(False, trigger_cb=False)
+
+    def handle_recording_toggle(self, active: bool):
+        is_running, status_message = recorder.toggle_recording()
+        
+        self.recorder_toggle.update_subtext(status_message)
+        self.recorder_toggle.set_active(is_running, trigger_cb=False)
+        
+        if is_running:
+            self.recorder_toggle.update_icon("stop_circle")
+        else:
+            self.recorder_toggle.update_icon("screen_record")
+
+    def sync_recorder_ui_state(self):
+        is_running = recorder.is_recording()
+        self.recorder_toggle.set_active(is_running, trigger_cb=False)
+        
+        if is_running:
+            self.recorder_toggle.update_subtext("Recording...")
+            self.recorder_toggle.update_icon("stop_circle")
+        else:
+            self.recorder_toggle.update_subtext("Ready")
+            self.recorder_toggle.update_icon("screen_record")
+
+    def handle_privacy_toggle(self, active: bool):
+        try:
+            # active=True means user clicked to turn ON privacy protection (Mute Mic)
+            target_mute = "1" if active else "0"
+            subprocess.run(["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", target_mute], check=True)
+        except Exception:
+            pass
+        
+        # Pass the clicked state directly to the sync function to bypass the race condition
+        self.sync_privacy_ui_state(force_state=active)
+
+    def sync_privacy_ui_state(self, force_state: bool = None):
+        try:
+            if force_state is not None:
+                is_muted = force_state
+            else:
+                output = subprocess.check_output(["wpctl", "get-volume", "@DEFAULT_AUDIO_SOURCE@"], text=True)
+                is_muted = "[MUTED]" in output
+            
+            if is_muted:
+                self.privacy_toggle.update_subtext("Turned On")
+                self.privacy_toggle.update_icon("mic_off")
+                # Visual button highlights indicating privacy shield is ON
+                self.privacy_toggle.set_active(True, trigger_cb=False)
+                self.privacy_toggle.add_css_class("privacy-muted")
+            else:
+                self.privacy_toggle.update_subtext("Turned Off")
+                self.privacy_toggle.update_icon("mic")
+                # Visual button returns to low-profile dark background when mic is live
+                self.privacy_toggle.set_active(False, trigger_cb=False)
+                self.privacy_toggle.remove_css_class("privacy-muted")
+        except Exception:
+            self.privacy_toggle.update_subtext("Unavailable")
+            self.privacy_toggle.update_icon("mic_external_off")
+            self.privacy_toggle.set_active(False, trigger_cb=False)
 
 class MediaContainer(Box):
     def __init__(self):
@@ -336,6 +423,8 @@ class SidebarRight(Window):
             self.quick_toggles.sync_battery_ui_state()
             self.quick_toggles.sync_nightlight_ui_state()
             self.quick_toggles.sync_theme_ui_state()
+            self.quick_toggles.sync_recorder_ui_state()
+            self.quick_toggles.sync_privacy_ui_state()
 
     def hide(self):
         super().hide()

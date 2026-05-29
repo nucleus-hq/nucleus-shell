@@ -35,7 +35,6 @@ class Configuration:
         self.bar = BarConfig()
         self.appearance = AppearanceConfig()
         self.misc = MiscConfig()
-        self.theme = "dark"
 
 config = helium.config
 config.merge_defaults(helium.functions.config_from_class(Configuration()))

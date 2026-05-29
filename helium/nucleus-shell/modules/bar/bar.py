@@ -9,6 +9,7 @@ import urllib.request
 from urllib.parse import urlparse
 import datetime
 import services.toplevel
+import services.modules as modules  # Clean global modules registry service
 from functools import partial
 from helium.types import (
     Panel, Box, Label, Button, CenterBox, MaterialSymbol, Icon, Image
@@ -37,7 +38,7 @@ try:
 except Exception:
     pass
 
-def build_module(name, ctx):
+def build_module(name):
     if name == "active_window":
         return ActiveWindowIndicator()
     elif name == "media":
@@ -45,18 +46,18 @@ def build_module(name, ctx):
     elif name == "workspaces":
         return WorkspaceContainer()
     elif name == "status":
-        return StatusPills(sbrRef=ctx.get("sbrRef"))
+        return StatusPills()
     elif name == "clock":
         return Clock()
     elif name == "power":
-        return PowerButton(pmRef=ctx.get("pmRef"))
+        return PowerButton()
     return None
 
-def build_section(module_names, ctx, orientation="horizontal"):
+def build_section(module_names, orientation="horizontal"):
     box = Box(orientation=orientation, spacing=2)
     widgets = []
     for name in module_names:
-        w = build_module(name, ctx)
+        w = build_module(name)
         if w:
             widgets.append(w)
     for i, w in enumerate(widgets):
@@ -282,13 +283,12 @@ class ActiveWindowIndicator(Box):
         return True
 
 class PowerButton(Box):
-    def __init__(self, pmRef=None):
+    def __init__(self):
         super().__init__(
             orientation="horizontal",
             spacing=0
         )
 
-        self.pm = pmRef
         powerbutton = Button(label="power_settings_new")
         powerbutton.add_css_class("powerbutton")
         powerbutton.on_click(self.on_pill_clicked)
@@ -297,24 +297,24 @@ class PowerButton(Box):
         self.add_css_class("powerbutton-pill")
 
     def on_pill_clicked(self):
-        if self.pm:
-            if self.pm.is_visible:
-                self.pm.hide()
+        try:
+            pm = modules.powermenu
+            if pm.is_visible:
+                pm.hide()
             else:
-                self.pm.show()
+                pm.show()
+        except AttributeError:
+            pass
 
 
 class StatusPills(Box):
-    def __init__(self, sbrRef=None):
+    def __init__(self):
         super().__init__(
             orientation="horizontal",
             spacing=0
         )
         self.add_css_class("status-pill-container")
 
-        self.sidebar = sbrRef # store the ref locally
-
-        # Set default state tracks
         self.wifi_symbol = "signal_wifi_off"
         self.bluetooth_symbol = "bluetooth"
 
@@ -323,10 +323,8 @@ class StatusPills(Box):
             strength = getattr(net, "signal_strength", 0)
             self.wifi_symbol = self.get_material_wifi_symbol(is_connected, strength)
 
-        # Assemble initial dual-glyph string label
         initial_label = f"{self.wifi_symbol} {self.bluetooth_symbol}"
 
-        # Create one unified button containing both icons as text ligatures
         self.pillButton = Button(label=initial_label)
         self.pillButton.add_css_class("status-pill-button")
         self.pillButton.on_click(self.on_pill_clicked)
@@ -361,18 +359,20 @@ class StatusPills(Box):
                 
                 if next_wifi != self.wifi_symbol:
                     self.wifi_symbol = next_wifi
-                    # Refresh the dual-icon string label
                     self.pillButton.set_label(f"{self.wifi_symbol} {self.bluetooth_symbol}")
             except Exception:
                 pass
         return True
 
     def on_pill_clicked(self):
-        if self.sidebar:
-            if self.sidebar.is_visible:
-                self.sidebar.hide()
+        try:
+            sbr = modules.sidebarRight
+            if sbr.is_visible:
+                sbr.hide()
             else:
-                self.sidebar.show()
+                sbr.show()
+        except AttributeError:
+            pass
 
 
 class Media(Box):
@@ -382,33 +382,24 @@ class Media(Box):
             spacing=0
         )
         self.add_css_class("media-pill")
-        
-        # Constrain the root container's height
         self.set_size_request(-1, 42) 
 
-        # Logo Icon container
         self.image_container = Box(orientation="horizontal", spacing=0)
         self.image_container.add_css_class("media-art-container")
         self.image_container.set_size_request(32, 32)
         self.add(self.image_container)
         
-        # Persistent Material Symbol logo
         self.logo_icon = MaterialSymbol(symbol="music_note", size=20)
         self.image_container.add(self.logo_icon)
 
-        # Vertical text layout stack
         self.labelBox = Box(orientation="vertical", spacing=0) 
         self.labelBox.add_css_class("media-text-container")
-        
-        # Explicit vertical alignment centering inside the container matrix
         self.labelBox.set_valign("center") 
         self.add(self.labelBox)
 
-        # Song Title (Top, Bold)
         self.titleLabel = Label(label="No Media")
         self.titleLabel.add_css_class("media-title")
 
-        # Artist Name (Bottom)
         self.artistLabel = Label(label="No Artist")
         self.artistLabel.add_css_class("media-artist")
 
@@ -417,7 +408,6 @@ class Media(Box):
 
         self.last_title = None
 
-        # Track player state updates
         helium.functions.Poll(1000, self.update_media)
         self.update_media()
 
@@ -440,13 +430,11 @@ class Media(Box):
             self.last_title = None
             return True
 
-        # Prevent unnecessary DOM restyling if the track hasn't changed
         if title == self.last_title:
             return True
 
         self.last_title = title
 
-        # Strict string length shortening limits
         if len(title) > 20: title = title[:17] + "..."
         if len(artist) > 15: artist = artist[:12] + "..."
 
@@ -465,11 +453,9 @@ def reload_bar_config():
 
 
 class Bar(Panel):
-    def __init__(self, monitor: int, sbrRef=None, pmRef=None):
+    def __init__(self, monitor: int):
         global _current_bar
 
-        self._sbrRef = sbrRef
-        self._pmRef = pmRef
         self._monitor = monitor
         self._pos = helium.config.get("bar.position") or "top"
 
@@ -536,7 +522,7 @@ class Bar(Panel):
 
         if old_bar.get("position") != new_bar.get("position"):
             self._old_config = new
-            Bar(self._monitor, sbrRef=self._sbrRef, pmRef=self._pmRef)
+            Bar(self._monitor)
             return False
 
         self._old_config = new
@@ -544,12 +530,11 @@ class Bar(Panel):
 
     def build_layout(self):
         layout = CenterBox()
-        ctx = {"sbrRef": self._sbrRef, "pmRef": self._pmRef}
 
         for section in ["start", "center", "end"]:
             names = helium.config.get(f"bar.modules.{section}") or []
             if names:
-                section_box = build_section(names, ctx)
+                section_box = build_section(names)
                 getattr(layout, f"set_{section}")(section_box)
 
         self.set_child(layout)

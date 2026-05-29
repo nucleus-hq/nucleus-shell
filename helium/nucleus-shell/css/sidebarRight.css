@@ -1,4 +1,3 @@
-@import url("colors.css");
 
 .sidebarRight {
     background-color: var(--surface);
@@ -201,4 +200,13 @@ button.quick-toggle-trigger {
     min-height: 210px;
     margin: 14px;
     border-radius: 18px;
+}
+
+
+.quick-toggle-box.large-toggle.recorder-toggle {
+    min-width: 150px;
+}
+
+.quick-toggle-box.large-toggle.privacy-toggle {
+    min-width: 160px; 
 }

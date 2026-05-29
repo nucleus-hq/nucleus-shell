@@ -2,16 +2,13 @@ import subprocess
 import helium
 
 def toggle_theme_mode(current_theme: str = "dark") -> str:
-    # 1. Flip the mode explicitly in memory
     next_mode = "light" if current_theme == "dark" else "dark"
     
-    # 2. Update Helium's live state directly
     try:
         helium.config.set("appearance.theme", next_mode)
-    except Exception as e:
-        print(f"Config write error: {e}")
+    except Exception:
+        pass
 
-    # 3. Pull background wallpaper reference
     wallpaper_path = None
     try:
         wallpaper_path = helium.config.get("appearance.background.path")
@@ -19,9 +16,7 @@ def toggle_theme_mode(current_theme: str = "dark") -> str:
         pass
 
     if wallpaper_path:
-        # Crucial fix: Added the template configuration flags 
-        # so matugen knows to parse configuration maps over to your layout paths
-        cmd = ["matugen", "image", str(wallpaper_path), "-m", next_mode]
+        cmd = ["matugen", "image", str(wallpaper_path), "-m", next_mode, "--prefer", "darkness"]
         try:
             subprocess.Popen(
                 cmd,
@@ -30,6 +25,6 @@ def toggle_theme_mode(current_theme: str = "dark") -> str:
                 start_new_session=True
             )
         except FileNotFoundError:
-            print("Error: 'matugen' binary not found in system PATH.")
+            pass
             
     return next_mode
