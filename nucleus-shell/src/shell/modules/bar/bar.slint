@@ -1,0 +1,15 @@
+import { VerticalBox, HorizontalBox } from "std-widgets.slint";
+import { Colors } from "../../../../material/colors.slint";
+
+export component Bar inherits Window {
+    background: Colors.background;
+
+    Rectangle {
+        width: 200px;
+        height: 36px;
+        border-radius: 14px;
+        background: Colors.surface_container;
+        y: 3.5px;
+    }
+
+}
