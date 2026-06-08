@@ -1,0 +1,69 @@
+import { Colors } from "../../../../material/colors.slint";
+
+struct WorkspaceData {
+    active: bool,
+    occupied: bool,
+}
+
+export component Bar inherits Window {
+    background: Colors.background;
+
+    in property <[WorkspaceData]> workspaces;
+    in property <int> workspace-count: 10;
+    in property <length> module-height: 36px;
+    in property <string> clock-text: "00:00";
+
+    property <length> slot-size: 28px;
+    property <length> paddings: 4px;
+
+    // workspace pill — center
+    Rectangle {
+        height: root.module-height;
+        width: (root.slot-size * root.workspace-count) + (root.paddings * 2);
+        border-radius: root.module-height / 2;
+        background: Colors.surface-container;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+
+        for ws[i] in workspaces : Rectangle {
+            x: root.paddings + (i * root.slot-size);
+            y: (parent.height - self.height) / 2;
+            width: root.module-height - 10px;
+            height: root.module-height - 10px;
+            border-radius: (root.module-height - 8px) / 2;
+            background: ws.active ? Colors.tertiary : transparent;
+            animate background { duration: 150ms; }
+
+            Text {
+                width: 100%;
+                height: 100%;
+                text: i + 1;
+                color: ws.active ? Colors.on-tertiary : ws.occupied ? Colors.on-surface : Colors.outline;
+                font-size: 11px;
+                font-weight: 600;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    Rectangle {
+        height: root.module-height;
+        width: 60px;
+        border-radius: root.module-height / 2;
+        background: Colors.surface-container;
+        x: parent.width - self.width - 12px;
+        y: (parent.height - self.height) / 2;
+
+        Text {
+            width: 100%;
+            height: 100%;
+            text: root.clock-text;
+            color: Colors.on-surface;
+            font-size: 12px;
+            font-weight: 600;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}

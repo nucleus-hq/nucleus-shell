@@ -1,6 +1,0 @@
-[config] 
-reload = false 
-
-[templates.nucleus]
-input_path = './templates/colors.json'
-output_path = '~/.config/nucleus-shell/config/colors.json'
