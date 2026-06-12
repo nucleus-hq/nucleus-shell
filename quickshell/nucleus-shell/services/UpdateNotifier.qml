@@ -20,7 +20,7 @@ Item {
 
     function fetchLatestVersion() {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 try {
                     const json = JSON.parse(xhr.responseText);
@@ -51,15 +51,9 @@ Item {
         };
 
         if (channel === "stable") {
-            xhr.open(
-                "GET",
-                "https://api.github.com/repos/xzepyx/nucleus-shell/releases/latest"
-            );
+            xhr.open("GET", "https://api.github.com/repos/xzepyx/nucleus-shell/releases/latest");
         } else {
-            xhr.open(
-                "GET",
-                "https://api.github.com/repos/xzepyx/nucleus-shell/releases"
-            );
+            xhr.open("GET", "https://api.github.com/repos/xzepyx/nucleus-shell/releases");
         }
 
         xhr.send();
@@ -69,20 +63,14 @@ Item {
         if (!currentVersion || !latestVersion)
             return;
 
-        if (currentVersion !== latestVersion && !notified) {
+        if (currentVersion !== latestVersion && currentVersion !== "vRC" && !notified) {
             notifyUpdate();
             notified = true;
         }
     }
 
     function notifyUpdate() {
-        Quickshell.execDetached([
-            "notify-send",
-            "-a", "Nucleus Shell",
-            "Update Available",
-            "Installed: " + currentVersion +
-            "\nLatest (" + channel + "): " + latestVersion
-        ]);
+        Quickshell.execDetached(["notify-send", "-a", "Nucleus Shell", "Update Available", "Installed: " + currentVersion + "\nLatest (" + channel + "): " + latestVersion]);
     }
 
     visible: false

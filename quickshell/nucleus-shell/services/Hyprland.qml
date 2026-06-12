@@ -1,6 +1,7 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 
+import qs.config
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -14,7 +15,7 @@ Singleton {
     readonly property bool isHyprland: Compositor.require("hyprland")
 
     // reactive Hyprland data, only valid if Hyprland is running
-    signal stateChanged()
+    signal stateChanged
     readonly property var toplevels: isHyprland ? Hyprland.toplevels : []
     readonly property var workspaces: isHyprland ? Hyprland.workspaces : []
     readonly property var monitors: isHyprland ? Hyprland.monitors : []
@@ -40,66 +41,79 @@ Singleton {
 
     // dispatch a command to Hyprland, no-op if not running
     function dispatch(request: string): void {
-        if (!isHyprland) return
-        Hyprland.dispatch(request)
+        if (!isHyprland)
+            return;
+        Hyprland.dispatch(request);
     }
 
     // switch workspace safely
     function changeWorkspace(targetWorkspaceId) {
-        if (!isHyprland || !targetWorkspaceId) return
-        root.dispatch("workspace " + targetWorkspaceId)
+        if (!Config.runtime.hacks.luafied_hyprland) {
+            if (!isHyprland || !targetWorkspaceId)
+                return;
+            root.dispatch("workspace " + targetWorkspaceId);
+        }
+        root.dispatch(hl.dsp.focus({
+            workspace
+        }));
     }
 
     // find most recently focused window in a workspace
     function focusedWindowForWorkspace(workspaceId) {
-        if (!isHyprland) return null
-        const wsWindows = root.windowList.filter(w => w.workspace.id === workspaceId)
-        if (wsWindows.length === 0) return null
+        if (!isHyprland)
+            return null;
+        const wsWindows = root.windowList.filter(w => w.workspace.id === workspaceId);
+        if (wsWindows.length === 0)
+            return null;
         return wsWindows.reduce((best, win) => {
-            const bestFocus = best?.focusHistoryID ?? Infinity
-            const winFocus = win?.focusHistoryID ?? Infinity
-            return winFocus < bestFocus ? win : best
-        }, null)
+            const bestFocus = best?.focusHistoryID ?? Infinity;
+            const winFocus = win?.focusHistoryID ?? Infinity;
+            return winFocus < bestFocus ? win : best;
+        }, null);
     }
 
     // check if a workspace has any windows
     function isWorkspaceOccupied(id: int): bool {
-        if (!isHyprland) return false
-        return Hyprland.workspaces.values.find(w => w?.id === id)?.lastIpcObject.windows > 0 || false
+        if (!isHyprland)
+            return false;
+        return Hyprland.workspaces.values.find(w => w?.id === id)?.lastIpcObject.windows > 0 || false;
     }
 
     // update all hyprctl processes
     function updateAll() {
-        if (!isHyprland) return
-        getClients.running = true
-        getLayers.running = true
-        getMonitors.running = true
-        getWorkspaces.running = true
-        getActiveWorkspace.running = true
+        if (!isHyprland)
+            return;
+        getClients.running = true;
+        getLayers.running = true;
+        getMonitors.running = true;
+        getWorkspaces.running = true;
+        getActiveWorkspace.running = true;
     }
 
     // largest window in a workspace
     function biggestWindowForWorkspace(workspaceId) {
-        if (!isHyprland) return null
-        const windowsInThisWorkspace = root.windowList.filter(w => w.workspace.id === workspaceId)
+        if (!isHyprland)
+            return null;
+        const windowsInThisWorkspace = root.windowList.filter(w => w.workspace.id === workspaceId);
         return windowsInThisWorkspace.reduce((maxWin, win) => {
-            const maxArea = (maxWin?.size?.[0] ?? 0) * (maxWin?.size?.[1] ?? 0)
-            const winArea = (win?.size?.[0] ?? 0) * (win?.size?.[1] ?? 0)
-            return winArea > maxArea ? win : maxWin
-        }, null)
+            const maxArea = (maxWin?.size?.[0] ?? 0) * (maxWin?.size?.[1] ?? 0);
+            const winArea = (win?.size?.[0] ?? 0) * (win?.size?.[1] ?? 0);
+            return winArea > maxArea ? win : maxWin;
+        }, null);
     }
 
     // refresh keyboard layout
     function refreshKeyboardLayout() {
-        if (!isHyprland) return
-        hyprctlDevices.running = true
+        if (!isHyprland)
+            return;
+        hyprctlDevices.running = true;
     }
 
     // only create hyprctl processes if Hyprland is running
     Component.onCompleted: {
         if (isHyprland) {
-            updateAll()
-            refreshKeyboardLayout()
+            updateAll();
+            refreshKeyboardLayout();
         }
     }
 
@@ -111,12 +125,12 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const devices = JSON.parse(this.text)
-                    const keyboard = devices.keyboards.find(k => k.main) || devices.keyboards[0]
-                    root.keyboardLayout = keyboard?.active_keymap?.toUpperCase()?.slice(0, 2) ?? "?"
+                    const devices = JSON.parse(this.text);
+                    const keyboard = devices.keyboards.find(k => k.main) || devices.keyboards[0];
+                    root.keyboardLayout = keyboard?.active_keymap?.toUpperCase()?.slice(0, 2) ?? "?";
                 } catch (err) {
-                    console.error("Failed to parse keyboard layout:", err)
-                    root.keyboardLayout = "?"
+                    console.error("Failed to parse keyboard layout:", err);
+                    root.keyboardLayout = "?";
                 }
             }
         }
@@ -129,13 +143,14 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    root.windowList = JSON.parse(this.text)
-                    let tempWinByAddress = {}
-                    for (let win of root.windowList) tempWinByAddress[win.address] = win
-                    root.windowByAddress = tempWinByAddress
-                    root.addresses = root.windowList.map(w => w.address)
+                    root.windowList = JSON.parse(this.text);
+                    let tempWinByAddress = {};
+                    for (let win of root.windowList)
+                        tempWinByAddress[win.address] = win;
+                    root.windowByAddress = tempWinByAddress;
+                    root.addresses = root.windowList.map(w => w.address);
                 } catch (e) {
-                    console.error("Failed to parse clients:", e)
+                    console.error("Failed to parse clients:", e);
                 }
             }
         }
@@ -147,8 +162,11 @@ Singleton {
         command: ["hyprctl", "monitors", "-j"]
         stdout: StdioCollector {
             onStreamFinished: {
-                try { root.monitorsInfo = JSON.parse(this.text) }
-                catch (e) { console.error("Failed to parse monitors:", e) }
+                try {
+                    root.monitorsInfo = JSON.parse(this.text);
+                } catch (e) {
+                    console.error("Failed to parse monitors:", e);
+                }
             }
         }
     }
@@ -159,8 +177,11 @@ Singleton {
         command: ["hyprctl", "layers", "-j"]
         stdout: StdioCollector {
             onStreamFinished: {
-                try { root.layers = JSON.parse(this.text) }
-                catch (e) { console.error("Failed to parse layers:", e) }
+                try {
+                    root.layers = JSON.parse(this.text);
+                } catch (e) {
+                    console.error("Failed to parse layers:", e);
+                }
             }
         }
     }
@@ -172,12 +193,15 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    root.workspacesInfo = JSON.parse(this.text)
-                    let map = {}
-                    for (let ws of root.workspacesInfo) map[ws.id] = ws
-                    root.workspaceById = map
-                    root.workspaceIds = root.workspacesInfo.map(ws => ws.id)
-                } catch (e) { console.error("Failed to parse workspaces:", e) }
+                    root.workspacesInfo = JSON.parse(this.text);
+                    let map = {};
+                    for (let ws of root.workspacesInfo)
+                        map[ws.id] = ws;
+                    root.workspaceById = map;
+                    root.workspaceIds = root.workspacesInfo.map(ws => ws.id);
+                } catch (e) {
+                    console.error("Failed to parse workspaces:", e);
+                }
             }
         }
     }
@@ -188,8 +212,11 @@ Singleton {
         command: ["hyprctl", "activeworkspace", "-j"]
         stdout: StdioCollector {
             onStreamFinished: {
-                try { root.activeWorkspaceInfo = JSON.parse(this.text) }
-                catch (e) { console.error("Failed to parse active workspace:", e) }
+                try {
+                    root.activeWorkspaceInfo = JSON.parse(this.text);
+                } catch (e) {
+                    console.error("Failed to parse active workspace:", e);
+                }
             }
         }
     }
@@ -198,19 +225,19 @@ Singleton {
     Connections {
         target: isHyprland ? Hyprland : null
         function onRawEvent(event) {
-            if (!isHyprland || event.name.endsWith("v2")) return
-
+            if (!isHyprland || event.name.endsWith("v2"))
+                return;
             if (event.name.includes("activelayout"))
-                refreshKeyboardLayout()
+                refreshKeyboardLayout();
             else if (event.name.includes("mon"))
-                Hyprland.refreshMonitors()
+                Hyprland.refreshMonitors();
             else if (event.name.includes("workspace") || event.name.includes("window"))
-                Hyprland.refreshWorkspaces()
+                Hyprland.refreshWorkspaces();
             else
-                Hyprland.refreshToplevels()
+                Hyprland.refreshToplevels();
 
-            updateAll()
-            root.stateChanged()
+            updateAll();
+            root.stateChanged();
         }
     }
 }
