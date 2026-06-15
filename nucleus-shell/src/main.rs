@@ -7,7 +7,7 @@ fn main() -> anyhow::Result<()> {
         .init();
 
 
-    let config = config::Config::load();
+    let config = config::Config::load("config.json")?;
 
     Ok(shell::modules::bar::run(config)?)
 }

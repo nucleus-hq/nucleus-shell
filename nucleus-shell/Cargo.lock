@@ -1946,9 +1946,9 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
 name = "helium-wsl"
-version = "0.1.7"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09e92845e898facea6006ec6ddfd2f6f8c901fa41e13c5e3f92cc4f591d5a330"
+checksum = "7b04994e7631accc94f00621393a7b73282bb45415ddd7570340c881d2f6137f"
 dependencies = [
  "chrono",
  "helium-wsl-macros",
@@ -1957,14 +1957,15 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 1.0.69",
+ "tokio",
  "zbus 4.4.0",
 ]
 
 [[package]]
 name = "helium-wsl-macros"
-version = "0.1.6"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "012a372ed649311af40b3daf1b6560297818ddabf15142ec00dbded7476eeeac"
+checksum = "9a8d9c3ce25a3cdbbcfabd06c4b223604ac8a44a777a2f6c011069b443ea18fd"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5203,6 +5204,15 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
+
+[[package]]
+name = "tokio"
+version = "1.52.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8fc7f01b389ac15039e4dc9531aa973a135d7a4135281b12d7c1bc79fd57fffe"
+dependencies = [
+ "pin-project-lite",
+]
 
 [[package]]
 name = "toml"

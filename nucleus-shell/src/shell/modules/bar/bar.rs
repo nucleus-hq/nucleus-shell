@@ -1,4 +1,3 @@
-use std::time::Duration;
 use helium::prelude::*;
 use helium::compositors::{self, Workspace};
 use helium::services::time;
@@ -13,7 +12,7 @@ pub fn run(config: crate::config::Config) -> anyhow::Result<()> {
     let density = config.bar.density;
     let default_height = config.bar.modules.default_height;
     let indicators = config.bar.modules.workspaces.indicators;
-    let time_format = config.bar.modules.clock.time_format;
+    let time_format = config.bar.modules.clock.format;
 
     let anchor = if config.bar.position == "bottom" {
         (AnchorEdge::Bottom, AnchorEdge::Left, AnchorEdge::Right)
@@ -35,16 +34,26 @@ pub fn run(config: crate::config::Config) -> anyhow::Result<()> {
         .build()?;
 
     shell.on_ready(move |rt| {
-        rt.set("Bar", "workspaces", value_from_workspaces(&initial_workspaces, indicators));
+        rt.set("Bar", "workspaces", value_from_workspaces(&initial_workspaces, indicators.into()));
         rt.set("Bar", "workspace-count", indicators as f64);
         rt.set("Bar", "module-height", default_height as f64);
     });
 
-    shell.on_compositor_event(wm, Duration::from_millis(100), move |ctx, comp| {
-        let workspaces = comp.workspaces();
+    shell.on_compositor_event(wm, move |comp, ctx| {
         let clock = time::formatted(if time_format == "12h" { "%I:%M %p" } else { "%H:%M" });
-        ctx.set("Bar", "workspaces", value_from_workspaces(&workspaces, indicators));
         ctx.set("Bar", "clock-text", clock);
+
+        match comp {
+            compositors::CompositorEvent::WorkspacesUpdated(workspaces) => {
+                ctx.set("Bar", "workspaces", value_from_workspaces(&workspaces, indicators.into()));
+            }
+            compositors::CompositorEvent::WorkspaceChanged(workspace) => {
+                // If the compositor only emits a single workspace update, wrap it in a slice
+                let workspaces = vec![workspace];
+                ctx.set("Bar", "workspaces", value_from_workspaces(&workspaces, indicators.into()));
+            }
+            _ => {} // Ignore window focus, closure changes, or monitor adjustments
+        }
     })?;
 
     shell.run()?;

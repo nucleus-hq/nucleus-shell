@@ -1,0 +1,16 @@
+{
+  "bar": {
+    "density": 42,
+    "position": "top",
+    "modules": {
+      "default_height": 36,
+      "clock": {
+        "format": "%H:%M",
+        "interval_ms": 1000
+      },
+      "workspaces": {
+        "indicators": 9
+      }
+    }
+  }
+}
