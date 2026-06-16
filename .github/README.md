@@ -59,8 +59,8 @@ Key goals:
 * [nucleus-colorschemes](https://github.com/nucleus-hq/nucleus-colorschemes): Colorschemes for nucleus-shell
 * [zenith](https://github.com/xZepyx/zenith): Intelligence backend for nucleus-shell (required to use intelligence)
 
-> [!CAUTION]
-> Note that any other repositories related to this project are community-made. Do not use them.
+> [!NOTE]
+> Note that any other repositories related to this project are community-made.
 
 ---
 
