@@ -32,7 +32,7 @@ Key goals:
   Only open an issue if the problem is still reproducible on the latest source.
 
 > [!NOTE]
-> * **nucleus-shell** is currently being actively rewritten in [helium](https://github.com/xZepyx/helium). Check the [v2](https://github.com/nucleus-hq/nucleus-shell/tree/v2) branch and [#46](https://github.com/nucleus-hq/nucleus-shell/pull/46) for more details.
+> The rewrite was shutdown. The [v2](https://github.com/nucleus-hq/nucleus-shell/tree/v2) branch and [#46](https://github.com/nucleus-hq/nucleus-shell/pull/46) are for only historical remarks.
 
 
 ---
