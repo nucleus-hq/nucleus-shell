@@ -26,7 +26,7 @@ Key goals:
 
 > [!CAUTION]
 > nucleus-shell is soon going to be archived, it will no longer be maintained anymore and I'll be stopping  
-> further any development. Though if anybody wants to take over I am happy too.
+> further any development.
 
 > [!IMPORTANT]
 > * If you want to access the older releases refer to the [archive branch](https://github.com/nucleus-hq/nucleus-shell/tree/archive)
