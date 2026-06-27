@@ -24,6 +24,10 @@ Key goals:
 - Prefer Usability
 - Composable modules, design and appearance
 
+> [!CAUTION]
+> nucleus-shell is soon going to be archived, it will no longer be maintained anymore and I'll be stopping  
+> further any development. Though if anybody wants to take over I am happy too.
+
 > [!IMPORTANT]
 > * If you want to access the older releases refer to the [archive branch](https://github.com/nucleus-hq/nucleus-shell/tree/archive)
 > * You can also join the [discord server](https://discord.gg/FcvT2VabEM) for help.
