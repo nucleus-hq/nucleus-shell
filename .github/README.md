@@ -191,14 +191,13 @@ Contributions are welcome. When contributing:
 #### I did copy some code from other repositories and took design inspirations which are listed here:
 * [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) (Copied some services, took some design inspirations)
 * [etherealboi/twinshell](https://github.com/etherealboi/twinshell) (Some widgets)
-* [bgibson72/yahr-quickshell](https://github.com/bgibson72/yahr-quickshell) (A script that lists installed apps)
 * [caelestia-dots/shell](https://github.com/caelestia-dots/shell) (Didn't copy any code, but yoinked a lot of design from caelestia's vertical bar design)
 
 ---
 
 <h2 align="center">✦ Thank You ✦</h2>
 
-* [@ivan](https://github.com/SavingFrame): Thanks bro for being our first contributor. :P
+* [@ivan](https://github.com/SavingFrame): Thanks bro for being the first contributor. :P
 * [@Tanujairamv](https://github.com/Tanujairamv): For being a great friend and contributing to the project and the community. <3
 * [@Saturno](https://github.com/Saturno-0): For being a great friend and contributing to the project and the community. ;)
 * [@end4](https://github.com/end4): For projects like illogical-impulse, You can get a lot of quickshell reference.
