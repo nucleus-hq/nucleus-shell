@@ -201,17 +201,19 @@ Contributions are welcome. When contributing:
 * [@ivan](https://github.com/SavingFrame): Thanks bro for being our first contributor. :P
 * [@Tanujairamv](https://github.com/Tanujairamv): For being a great friend and contributing to the project and the community. <3
 * [@Saturno](https://github.com/Saturno-0): For being a great friend and contributing to the project and the community. ;)
-* [@end4](https://github.com/end4): For his great projects like ii-qs.
+* [@end4](https://github.com/end4): For projects like illogical-impulse, You can get a lot of quickshell reference.
 * [@soramanew](https://github.com/soramanew): We haven't talked but I was greatly inspired by his project **caelestia-shell**.
-* [@Axenide](https://github.com/axenide): I also haven't talked to him but his project **Ax-Shell** got me into hyprland shells.
+* [@Axenide](https://github.com/axenide): I also haven't talked to him but his project **Ax-Shell** got me into hyprland shells. Probably.
 
 ---
 
 <h2 align="center">✦ Team/Project Members ✦</h2>
 
-* [@xZepyx](https://github.com/xZepyx): Founder & Maintainer
+* [@xZepyx](https://github.com/xZepyx): Founder & Former Maintainer
 * [@TanujairamV](https://github.com/TanujairamV): Material UI Developer & Designer
 * [@Saturno](https://github.com/Saturno-0): Logical Developer
+
+* None of us ^ are working on this project anymore.
 
 ---
 
