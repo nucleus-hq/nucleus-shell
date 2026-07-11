@@ -25,7 +25,7 @@ Key goals:
 - Composable modules, design and appearance
 
 > [!CAUTION]
-> nucleus-shell is soon going to be archived, it will no longer be maintained anymore and I'll be stopping any further development
+> nucleus-shell has been archived. There will be no longer support/development to it. End of story
 
 > [!IMPORTANT]
 > * If you want to access the older releases refer to the [archive branch](https://github.com/nucleus-hq/nucleus-shell/tree/archive)
